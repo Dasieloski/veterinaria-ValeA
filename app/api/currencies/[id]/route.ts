@@ -3,12 +3,13 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function PUT(request: NextRequest, context: { params: Record<string, string> }) {
-  const { id } = context.params
+type Params = { params: { id: string } } // Definir explícitamente el tipo correcto
+
+export async function PUT(request: NextRequest, { params }: Params) {
+  const { id } = params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
 
-  // No permitir actualizar la moneda predeterminada
   const currency = await prisma.currency.findUnique({ where: { id } })
   if (currency?.isDefault) {
     return NextResponse.json(
@@ -25,8 +26,8 @@ export async function PUT(request: NextRequest, context: { params: Record<string
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(request: NextRequest, context: { params: Record<string, string> }) {
-  const { id } = context.params
+export async function DELETE(request: NextRequest, { params }: Params) {
+  const { id } = params
 
   const currency = await prisma.currency.findUnique({ where: { id } })
   if (!currency) {
