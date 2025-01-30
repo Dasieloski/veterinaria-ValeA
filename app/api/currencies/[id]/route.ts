@@ -4,15 +4,21 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params
+export async function PUT(
+  request: Request,
+  context: { params: { id: string } }
+) {
+  const { id } = context.params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
 
   // No permitir actualizar la moneda predeterminada
   const currency = await prisma.currency.findUnique({ where: { id } })
   if (currency?.isDefault) {
-    return NextResponse.json({ error: 'No se puede actualizar la moneda predeterminada.' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'No se puede actualizar la moneda predeterminada.' },
+      { status: 400 }
+    )
   }
 
   const updatedCurrency = await prisma.currency.update({
