@@ -5,9 +5,9 @@ const prisma = new PrismaClient()
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const id = params.id
+  const id = context.params.id
   if (!id) {
     return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
   }
@@ -33,9 +33,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const id = params.id
+  const id = context.params.id
   if (!id) {
     return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
   }
