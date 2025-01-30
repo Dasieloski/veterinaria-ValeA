@@ -3,8 +3,11 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  const id = params?.id
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const id = params.id
   if (!id) {
     return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
   }
@@ -28,8 +31,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const id = params?.id
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const id = params.id
   if (!id) {
     return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
   }
@@ -40,7 +46,10 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   }
 
   if (currency.isDefault) {
-    return NextResponse.json({ error: 'No se puede eliminar la moneda predeterminada.' }, { status: 400 })
+    return NextResponse.json(
+      { error: 'No se puede eliminar la moneda predeterminada.' },
+      { status: 400 }
+    )
   }
 
   await prisma.currency.delete({ where: { id } })
