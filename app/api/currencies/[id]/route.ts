@@ -6,9 +6,9 @@ const prisma = new PrismaClient()
 
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params
+  const { id } = params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
 
@@ -33,18 +33,21 @@ export async function PUT(
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const { id } = params
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params
 
-    const currency = await prisma.currency.findUnique({ where: { id } })
-    if (!currency) {
-        return NextResponse.json({ error: 'Moneda no encontrada.' }, { status: 404 })
-    }
+  const currency = await prisma.currency.findUnique({ where: { id } })
+  if (!currency) {
+    return NextResponse.json({ error: 'Moneda no encontrada.' }, { status: 404 })
+  }
 
-    if (currency.isDefault) {
-        return NextResponse.json({ error: 'No se puede eliminar la moneda predeterminada.' }, { status: 400 })
-    }
+  if (currency.isDefault) {
+    return NextResponse.json({ error: 'No se puede eliminar la moneda predeterminada.' }, { status: 400 })
+  }
 
-    await prisma.currency.delete({ where: { id } })
-    return NextResponse.json({ message: 'Moneda eliminada correctamente.' })
+  await prisma.currency.delete({ where: { id } })
+  return NextResponse.json({ message: 'Moneda eliminada correctamente.' })
 }
