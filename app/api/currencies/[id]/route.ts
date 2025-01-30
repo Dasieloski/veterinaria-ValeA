@@ -5,8 +5,9 @@ const prisma = new PrismaClient()
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: Record<string, any> // 👈 Ajustamos el tipo aquí
 ) {
+  const { params } = context
   const { id } = params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
@@ -34,8 +35,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: Record<string, any> // 👈 También aplicamos el cambio aquí
 ) {
+  const { params } = context
   const { id } = params
 
   const currency = await prisma.currency.findUnique({ where: { id } })
