@@ -1,14 +1,13 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function PUT(
-  request: NextRequest,
-  context: Record<string, any> // 👈 Ajustamos el tipo aquí
-) {
-  const { params } = context
+interface Context {
+  params: { id: string }
+}
+
+export async function PUT(request: NextRequest, { params }: Context) {
   const { id } = params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
@@ -34,11 +33,7 @@ export async function PUT(
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: Record<string, any> // 👈 También aplicamos el cambio aquí
-) {
-  const { params } = context
+export async function DELETE(request: NextRequest, { params }: Context) {
   const { id } = params
 
   const currency = await prisma.currency.findUnique({ where: { id } })
