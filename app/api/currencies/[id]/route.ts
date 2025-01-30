@@ -3,10 +3,12 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-type Params = { params: { id: string } } // Definir explícitamente el tipo correcto
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  const id = params?.id
+  if (!id) {
+    return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
+  }
 
-export async function PUT(request: NextRequest, { params }: Params) {
-  const { id } = params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
 
@@ -26,8 +28,11 @@ export async function PUT(request: NextRequest, { params }: Params) {
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(request: NextRequest, { params }: Params) {
-  const { id } = params
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+  const id = params?.id
+  if (!id) {
+    return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
+  }
 
   const currency = await prisma.currency.findUnique({ where: { id } })
   if (!currency) {
