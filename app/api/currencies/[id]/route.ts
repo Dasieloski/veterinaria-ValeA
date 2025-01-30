@@ -3,13 +3,10 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-interface Params {
-  params: {
-    id: string
-  }
-}
-
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const id = params.id
   if (!id) {
     return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
@@ -34,7 +31,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const id = params.id
   if (!id) {
     return NextResponse.json({ error: 'ID no proporcionado.' }, { status: 400 })
