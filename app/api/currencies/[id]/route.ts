@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params, searchParams: _searchParams }: { params: { id: string }, searchParams: URLSearchParams }
 ) {
   const { id } = params
   const data = await request.json()
@@ -35,7 +35,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params, searchParams: _searchParams }: { params: { id: string }, searchParams: URLSearchParams }
 ) {
   const { id } = params
 
