@@ -1,5 +1,3 @@
-// app/api/currencies/[id]/route.ts
-/* eslint-disable */
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
@@ -7,7 +5,7 @@ const prisma = new PrismaClient()
 
 export async function PUT(
   request: NextRequest,
-  { params, searchParams: _searchParams }: { params: { id: string }, searchParams: URLSearchParams }
+  { params }: { params: { id: string } }
 ) {
   const { id } = params
   const data = await request.json()
@@ -36,7 +34,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params, searchParams: _searchParams }: { params: { id: string }, searchParams: URLSearchParams }
+  { params }: { params: { id: string } }
 ) {
   const { id } = params
 
