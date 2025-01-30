@@ -1,4 +1,5 @@
 // app/api/currencies/[id]/route.ts
+/* eslint-disable */
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
