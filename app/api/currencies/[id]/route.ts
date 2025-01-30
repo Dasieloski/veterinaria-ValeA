@@ -3,8 +3,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params
+export async function PUT(request: NextRequest, context: { params: Record<string, string> }) {
+  const { id } = context.params
   const data = await request.json()
   const { code, symbol, exchangeRate } = data
 
@@ -19,18 +19,14 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
   const updatedCurrency = await prisma.currency.update({
     where: { id },
-    data: {
-      code,
-      symbol,
-      exchangeRate,
-    },
+    data: { code, symbol, exchangeRate },
   })
 
   return NextResponse.json(updatedCurrency)
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params
+export async function DELETE(request: NextRequest, context: { params: Record<string, string> }) {
+  const { id } = context.params
 
   const currency = await prisma.currency.findUnique({ where: { id } })
   if (!currency) {
