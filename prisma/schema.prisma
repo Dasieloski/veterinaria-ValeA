@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Usuario (Admin)
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  role     String
+  tokens   Token[]
+}
+
+enum Role {
+  ADMIN
+}
+
+// Categoría
+model Category {
+  id          String    @id
+  name        String    @unique
+  emoji       String
+  gradient    String
+  description String
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+// Producto
+model Product {
+  id                  String   @id @default(cuid())
+  name                String
+  price               Decimal  @db.Decimal(10, 2)
+  image               String
+  categoryId          String
+  description         String
+  emoji               String
+  detailedDescription String?  @db.Text
+  category            Category @relation(fields: [categoryId], references: [id])
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  Offer               Offer[]
+
+  @@map("products")
+}
+
+// Moneda
+model Currency {
+  id           String   @id @default(cuid())
+  code         String   @unique // USD, CUP, MLC, EUR
+  symbol       String // $, €
+  exchangeRate Decimal  @db.Decimal(10, 2)
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("currencies")
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  productId   String
+  discount    Float
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  title       String?
+  description String?
+  emoji       String?
+  product     Product  @relation(fields: [productId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("offers")
+}
