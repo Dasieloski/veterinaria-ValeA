@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TorreStore",
-  description: "TorreStore, Tienda online ubicada en La Habana, Cuba de productos variados",
+  title: "99Store",
+  description: "99Store, Tienda online ubicada en La Habana, Cuba de productos variados",
   icons: {
     icon: "/icons/tower-icon.svg",
     apple: "/icons/tower-icon.svg"
