@@ -439,7 +439,7 @@ export default function Store() {
                                   size="sm"
                                   onClick={() => {
                                     console.log(`Removiendo producto con ID: ${item.id}`)
-                                    removeFromCart(Number(item.id))
+                                    removeFromCart(item.id)
                                   }}
                                   className="hover:bg-destructive/20"
                                 >
@@ -538,7 +538,7 @@ export default function Store() {
                                   size="sm"
                                   onClick={() => {
                                     console.log(`Removiendo producto con ID: ${item.id}`)
-                                    removeFromCart(Number(item.id))
+                                    removeFromCart(item.id)
                                   }}
                                   className="hover:bg-destructive/20"
                                 >

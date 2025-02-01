@@ -105,6 +105,10 @@ export function OffersSlider() {
     return <p className="text-red-500">{error}</p>
   }
 
+  if (offers.length === 0) {
+    return null
+  }
+
   return (
     <div className="w-full bg-gradient-to-r from-primary/5 via-background to-primary/5 py-8">
       <div className="container mx-auto px-4">

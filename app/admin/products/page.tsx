@@ -169,6 +169,7 @@ export default function ProductsPage() {
   }
 
   const handleDelete = async (id: string) => {
+    console.log(`Removiendo producto con ID: ${id}`)
     try {
       const res = await fetch('/api/products', {
         method: 'DELETE',

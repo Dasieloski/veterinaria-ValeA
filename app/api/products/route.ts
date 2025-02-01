@@ -52,8 +52,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Tipo de archivo no permitido' }, { status: 400 })
         }
 
+        // Sanitizar el nombre del archivo
+        const sanitizeFileName = (filename: string) => {
+            return filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\.-]/g, '')
+        }
+
+        const originalFileName = sanitizeFileName(file.name)
+        const fileName = `${Date.now()}-${originalFileName}`
+
         // Subir archivo a Supabase usando el cliente admin
-        const fileName = `${Date.now()}-${file.name}`
         const { data, error: uploadError } = await supabaseAdmin
             .storage
             .from('product-images')
@@ -77,8 +84,8 @@ export async function POST(request: Request) {
                 price: parseFloat(price),
                 category: { connect: { id: String(category) } },
                 description,
-                detailedDescription: detailedDescription || description,
                 emoji,
+                detailedDescription: detailedDescription || description,
                 image: imageUrl,
             },
             include: { category: true },
@@ -88,9 +95,9 @@ export async function POST(request: Request) {
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('Error al crear el producto:', error)
-            return NextResponse.json({ error: error.message }, { status: 500 })
+            return NextResponse.json({ error: 'Error al crear el producto' }, { status: 500 })
         }
-        console.error('Error desconocido al crear el producto:', error)
+
         return NextResponse.json({ error: 'Error al crear el producto' }, { status: 500 })
     }
 }
