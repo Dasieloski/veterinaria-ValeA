@@ -1,68 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
-    
+
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
- 
+
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
- 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 199 89% 48%;
-    --secondary-foreground: 222 47% 11%;
- 
+
+    /* Azul profesional médico */
+    --primary: 210 100% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Verde institucional suave */
+    --secondary: 160 84% 39%;
+    --secondary-foreground: 0 0% 100%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
- 
-    --accent: 199 89% 48%;
+
+    /* Verde más claro para acentos */
+    --accent: 160 84% 39%;
     --accent-foreground: 222 47% 11%;
- 
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
+    /* Bordes y inputs más sutiles */
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221 83% 53%;
- 
-    --radius: 0.75rem;
+    --ring: 210 100% 35%;
+
+    /* Bordes más sutiles */
+    --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
- 
+
     --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
- 
+
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
- 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
- 
-    --secondary: 199 89% 48%;
-    --secondary-foreground: 210 40% 98%;
- 
+
+    /* Azul más oscuro para modo dark */
+    --primary: 210 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Verde más oscuro para modo dark */
+    --secondary: 160 84% 29%;
+    --secondary-foreground: 0 0% 100%;
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 199 89% 48%;
+
+    /* Verde más oscuro para acentos en dark mode */
+    --accent: 160 84% 29%;
     --accent-foreground: 210 40% 98%;
- 
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
- 
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --ring: 210 100% 45%;
   }
 }
 
@@ -70,27 +78,174 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-.floating-emoji {
-  position: fixed;
-  animation: float-up 10s linear infinite;
-  opacity: 0.7;
-  z-index: 10;
-  pointer-events: none;
+/* Transiciones suaves para interacciones */
+.btn,
+button,
+a,
+input,
+select {
+  @apply transition-all duration-200;
 }
 
-@keyframes float-up {
-  0% {
-    transform: translateY(100vh);
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateY(-100px);
+/* Estilos profesionales para tarjetas */
+.card {
+  @apply bg-card border border-border shadow-sm hover:shadow-md transition-shadow duration-200;
+}
+
+/* Estilos para tablas profesionales */
+table {
+  @apply w-full border-collapse;
+}
+
+th {
+  @apply bg-muted px-4 py-2 text-left font-medium text-muted-foreground;
+}
+
+td {
+  @apply px-4 py-2 border-t border-border;
+}
+
+/* Estilos para formularios profesionales */
+input,
+select,
+textarea {
+  @apply bg-background border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background;
+}
+
+/* Badges y estados */
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100;
+}
+
+.badge-error {
+  @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100;
+}
+
+/* Contenedores con bordes sutiles */
+.container-bordered {
+  @apply border border-border rounded-lg p-6 bg-card;
+}
+
+/* Tipografía profesional */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-semibold tracking-tight;
+}
+
+h1 {
+  @apply text-4xl md:text-5xl mb-8;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl mb-6;
+}
+
+h3 {
+  @apply text-2xl md:text-3xl mb-4;
+}
+
+/* Navegación y menús */
+nav {
+  @apply border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60;
+}
+
+.nav-link {
+  @apply px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors;
+}
+
+/* Tooltips y elementos informativos */
+.tooltip {
+  @apply absolute z-50 px-2 py-1 text-xs font-medium text-white bg-foreground rounded shadow-lg;
+}
+
+/* Animaciones sutiles */
+@keyframes fadeIn {
+  from {
     opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para estados de carga */
+.skeleton {
+  @apply animate-pulse bg-muted rounded;
+}
+
+/* Estilos para mensajes de estado */
+.alert {
+  @apply p-4 mb-4 rounded-md border;
+}
+
+.alert-info {
+  @apply bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/50 dark:border-blue-800 dark:text-blue-100;
+}
+
+.alert-warning {
+  @apply bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/50 dark:border-yellow-800 dark:text-yellow-100;
+}
+
+.alert-error {
+  @apply bg-red-50 border-red-200 text-red-800 dark:bg-red-900/50 dark:border-red-800 dark:text-red-100;
+}
+
+.alert-success {
+  @apply bg-green-50 border-green-200 text-green-800 dark:bg-green-900/50 dark:border-green-800 dark:text-green-100;
+}
+
+/* Estilos para botones de acción */
+.btn-action {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+}
+
+.btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+}
+
+/* Estilos para secciones de contenido */
+.content-section {
+  @apply py-12 border-t border-border first:border-0;
+}
+
+.content-container {
+  @apply container mx-auto px-4 max-w-7xl;
+}
+
+/* Utilidades de espaciado consistentes */
+.section-spacing {
+  @apply space-y-8;
+}
+
+.item-spacing {
+  @apply space-y-4;
+}

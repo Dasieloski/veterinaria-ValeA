@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 
 const FloatingEmojis = () => {
     const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
-  const emojis = ["🚀", "⭐", "💫", "✨", "🌟", "💝", "🎉", "🎈", "🎊", "🎁", "9️⃣"]
+  const emojis = ["🐶", "🐱", "🐴", "🐕", "🐈", "🐇", "🐦", "🐢", "🐠", "🦜", "🐄", "🐖", "🐓", "🐑", "🐐"];
+
 
     useEffect(() => {
         // Función para actualizar el tamaño de la ventana

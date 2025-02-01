@@ -1,4 +1,4 @@
-// app/api/offers/[id]/route.ts
+/* eslint-disable */
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 

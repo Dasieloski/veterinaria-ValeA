@@ -16,12 +16,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "99Store",
-  description: "99Store, Tienda online ubicada en La Habana, Cuba de productos variados",
-  icons: {
+  title: "ValeA",
+  description: "Venta de productos veterinarios de alta calidad para todo tipo de animales",
+  /* icons: {
     icon: "/icons/tower-icon.svg",
     apple: "/icons/tower-icon.svg"
-  },
+  }, */
 };
 
 export default function RootLayout({

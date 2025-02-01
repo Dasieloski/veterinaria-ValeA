@@ -1,36 +1,31 @@
 /* eslint-disable */
-'use client'
+"use client"
 
 import React, { Suspense, useEffect, useState } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import FloatingEmojis from '@/components/FloatingEmojis'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { useRouter } from 'next/navigation'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { useRouter } from "next/navigation"
 import { SearchProducts } from "@/components/search-products"
 import { OffersSlider } from "@/components/offers-slider"
-import Loading from './loading'
+import Loading from "./loading"
 import { AnimatedTitle } from "@/components/animated-title"
 import {
   CategorySkeleton,
   ProductCardSkeleton,
   HeroSkeleton,
   OfferCardSkeleton,
-  CartItemSkeleton
-} from '@/components/skeletons'
+  CartItemSkeleton,
+} from "@/components/skeletons"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Category, Currency } from "@prisma/client"
-import { fetchOffers } from '@/lib/api'
-import { CurrencySelector } from '@/components/currency-selector'
-import { useCart } from '@/contexts/CartContext'
+import type { Category, Currency } from "@prisma/client"
+import { fetchOffers } from "@/lib/api"
+import { CurrencySelector } from "@/components/currency-selector"
+import { useCart } from "@/contexts/CartContext"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import FloatingEmojis from "@/components/FloatingEmojis"
 
 interface Image {
   url: string
@@ -64,100 +59,9 @@ interface Offer {
   product?: Product
 }
 
-/* interface CartItem {
-  id: string
-  name: string
-  price: number
-  quantity: number
-  emoji: string
-  image: string
-} */
-
-/* // Floating emojis animation
-const FloatingEmojis = () => {
-  const emojis = ["🚀", "⭐", "💫", "✨", "🌟", "💝", "🎉", "🎈", "🎊", "🎁"]
-  
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {emojis.map((emoji, index) => (
-        <motion.div
-          key={index}
-          className="absolute text-3xl"
-          initial={{ 
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            opacity: 0 
-          }}
-          animate={{
-            y: [null, -500],
-            opacity: [0, 1, 0],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{
-            duration: 10 + Math.random() * 10,
-            repeat: Infinity,
-            delay: Math.random() * 20
-          }}
-        >
-          {emoji}
-        </motion.div>
-      ))}
-    </div>
-  )
-} */
-
-/* //* Mock data
-const products = [
-  {
-    id: 1,
-    name: "Super Gaming Laptop 🎮",
-    price: 999.99,
-    images: [
-      { url: "/placeholder.svg?height=400&width=400", alt: "Gaming Laptop" }
-    ],
-    category: "Tecnología",
-    description: "¡El mejor laptop para gaming! 🚀",
-    reactions: ["🔥", "💻", "🎮", "⚡"],
-    stock: 5
-  },
-  {
-    id: 2,
-    name: "Zapatillas Runner Pro 👟",
-    price: 89.99,
-    images: [
-      { url: "/placeholder.svg?height=400&width=400", alt: "Zapatillas" }
-    ],
-    category: "Deportes",
-    description: "¡Corre como nunca! 🏃‍♂️",
-    reactions: ["👟", "🏃‍♂️", "💨", "🌟"],
-    stock: 10
-  },
-  {
-    id: 3,
-    name: "Smartphone Ultra Plus 📱",
-    price: 699.99,
-    images: [
-      { url: "/placeholder.svg?height=400&width=400", alt: "Smartphone" }
-    ],
-    category: "Tecnología",
-    description: "¡La mejor cámara del mercado! 📸",
-    reactions: ["📱", "📸", "🎵", "✨"],
-    stock: 8
-  }
-] */
-
-/* const categories = [
-  { id: "todos", name: "Todos", emoji: "🌟", gradient: "from-pink-500 to-purple-500" },
-  { id: "tecnologia", name: "Tecnología", emoji: "💻", gradient: "from-blue-500 to-cyan-500" },
-  { id: "deportes", name: "Deportes", emoji: "⚽", gradient: "from-green-500 to-emerald-500" },
-  { id: "comida", name: "Comida", emoji: "🍕", gradient: "from-orange-500 to-red-500" },
-  { id: "musica", name: "Música", emoji: "🎵", gradient: "from-violet-500 to-purple-500" },
-  { id: "fotografia", name: "Fotografía", emoji: "📸", gradient: "from-yellow-500 to-orange-500" }
-] */
-
 export default function Store() {
   const router = useRouter()
-  const { addToCart, cart, removeFromCart, getCartTotal} = useCart()
+  const { addToCart, cart, removeFromCart, getCartTotal } = useCart()
   const [darkMode, setDarkMode] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState("todos")
   const [searchTerm, setSearchTerm] = useState("")
@@ -172,7 +76,7 @@ export default function Store() {
   const [offers, setOffers] = useState<Offer[]>([])
   const [loadingOffers, setLoadingOffers] = useState<boolean>(true)
   const [errorOffers, setErrorOffers] = useState<string | null>(null)
-  
+
   // Definición única de currencies
   const [currencies, setCurrencies] = useState<Currency[]>([])
   const [currencyLoading, setCurrencyLoading] = useState<boolean>(true)
@@ -192,7 +96,7 @@ export default function Store() {
         setOffers(data)
       } catch (error) {
         console.error(error)
-        setErrorOffers('Error al cargar las ofertas.')
+        setErrorOffers("Error al cargar las ofertas.")
       } finally {
         setLoadingOffers(false)
       }
@@ -202,53 +106,53 @@ export default function Store() {
   }, [])
 
   useEffect(() => {
-    console.log('Contenido del carrito:', cart)
+    console.log("Contenido del carrito:", cart)
   }, [cart])
 
   useEffect(() => {
     if (errorOffers) {
-      console.log('Error al cargar las ofertas:', errorOffers)
+      console.log("Error al cargar las ofertas:", errorOffers)
     }
   }, [errorOffers])
 
   useEffect(() => {
-    console.log('Estado de carga de ofertas:', loadingOffers)
+    console.log("Estado de carga de ofertas:", loadingOffers)
   }, [loadingOffers])
 
   useEffect(() => {
-    console.log('Ofertas:', offers)
+    console.log("Ofertas:", offers)
   }, [offers])
 
   const fetchCurrencies = async () => {
     try {
-      const res = await fetch('/api/currencies')
+      const res = await fetch("/api/currencies")
       if (!res.ok) {
-        throw new Error('Error al obtener las monedas')
+        throw new Error("Error al obtener las monedas")
       }
       const data: Currency[] = await res.json()
       setCurrencies(data)
       setCurrencyLoading(false)
       loadCurrencyFromStorage(data)
     } catch (error) {
-      console.error('Error al cargar las monedas:', error)
-      setErrorOffers('Error al cargar las monedas')
+      console.error("Error al cargar las monedas:", error)
+      setErrorOffers("Error al cargar las monedas")
       setCurrencyLoading(false)
     }
   }
 
   const loadCurrencyFromStorage = (availableCurrencies: Currency[]) => {
-    const savedCurrency = localStorage.getItem('selectedCurrency')
+    const savedCurrency = localStorage.getItem("selectedCurrency")
     if (savedCurrency) {
       try {
         const parsedCurrency: Currency = JSON.parse(savedCurrency)
-        const currencyExists = availableCurrencies.find(c => c.code === parsedCurrency.code)
+        const currencyExists = availableCurrencies.find((c) => c.code === parsedCurrency.code)
         if (currencyExists) {
           setSelectedCurrency(currencyExists)
         } else {
           setDefaultCurrency(availableCurrencies)
         }
       } catch (e) {
-        console.error('Error al parsear la moneda guardada:', e)
+        console.error("Error al parsear la moneda guardada:", e)
         setDefaultCurrency(availableCurrencies)
       }
     } else {
@@ -257,16 +161,16 @@ export default function Store() {
   }
 
   const setDefaultCurrency = (availableCurrencies: Currency[]) => {
-    const defaultCurrency = availableCurrencies.find(c => c.isDefault) || availableCurrencies[0]
+    const defaultCurrency = availableCurrencies.find((c) => c.isDefault) || availableCurrencies[0]
     setSelectedCurrency(defaultCurrency)
-    localStorage.setItem('selectedCurrency', JSON.stringify(defaultCurrency))
+    localStorage.setItem("selectedCurrency", JSON.stringify(defaultCurrency))
   }
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories')
+      const res = await fetch("/api/categories")
       if (!res.ok) {
-        throw new Error('Error al obtener las categorías')
+        throw new Error("Error al obtener las categorías")
       }
       const data: Category[] = await res.json()
       const todosCategory: Category = {
@@ -280,71 +184,65 @@ export default function Store() {
       }
       setCategories([todosCategory, ...data])
     } catch (error) {
-      console.error('Error al cargar las categorías:', error)
-      setError('Error al cargar las categorías')
+      console.error("Error al cargar las categorías:", error)
+      setError("Error al cargar las categorías")
     }
   }
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch('/api/products')
+      const res = await fetch("/api/products")
       if (!res.ok) {
-        throw new Error('Error al obtener los productos')
+        throw new Error("Error al obtener los productos")
       }
       const data: Product[] = await res.json()
       setProducts(data)
       setLoading(false)
     } catch (error) {
-      console.error('Error al cargar los productos:', error)
-      setError('Error al cargar los productos')
+      console.error("Error al cargar los productos:", error)
+      setError("Error al cargar los productos")
       setLoading(false)
     }
   }
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
-    document.documentElement.classList.toggle('dark')
+    document.documentElement.classList.toggle("dark")
   }
 
   // Filtrar productos
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === "todos" ||
-      product.category.name.toLowerCase() === selectedCategory
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredProducts = products.filter((product) => {
+    const matchesCategory = selectedCategory === "todos" || product.category.name.toLowerCase() === selectedCategory
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
-  // Calcular total (se puede mover al contexto si se prefiere)
-/*   const total = products.reduce((sum, item) => {
-    const currencyData = currencies.find(c => c.code === selectedCurrency?.code)
-    return sum + (item.price / (currencyData ? currencyData.exchangeRate : 1))
-  }, 0) */
+  React.useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode)
+  }, [darkMode]) // Added darkMode to dependencies
 
   React.useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode)
-  }, [])
-
-  React.useEffect(() => {
-    const words = ["divertida", "increíble", "fantástica", "mágica", "especial", "asombrosa"];
+    const words = [ "increíble", "fantástica", "mágica", "especial", "asombrosa"]
     const interval = setInterval(() => {
       setHighlightedWord((current) => {
-        const currentIndex = words.indexOf(current);
-        return words[(currentIndex + 1) % words.length];
-      });
-    }, 5000);
+        const currentIndex = words.indexOf(current)
+        return words[(currentIndex + 1) % words.length]
+      })
+    }, 5000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   const handleAddToCart = (product: Product) => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: parseFloat(product.price),
+      price: Number.parseFloat(product.price),
       quantity: 1,
       emoji: product.emoji || "🛒",
-      image: product.image || "/placeholder.svg"
+      image: product.image || "/placeholder.svg",
     })
   }
 
@@ -354,7 +252,7 @@ export default function Store() {
         <FloatingEmojis />
 
         {/* Navigation */}
-        <nav className="sticky top-0 z-50 backdrop-blur-lg bg-background/80 border-b">
+        <nav className="sticky top-0 z-50 backdrop-blur-lg bg-background/95 border-b">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <AnimatedTitle />
@@ -373,14 +271,9 @@ export default function Store() {
                     </SheetHeader>
                     <div className="mt-4 space-y-4">
                       <SearchProducts onSearch={setSearchTerm} />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={toggleDarkMode}
-                        className="w-full justify-start"
-                      >
-                        {darkMode ? '🌙' : '☀️'}
-                        Modo {darkMode ? 'Oscuro' : 'Claro'}
+                      <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="w-full justify-start">
+                        {darkMode ? "🌙" : "☀️"}
+                        Modo {darkMode ? "Oscuro" : "Claro"}
                       </Button>
                     </div>
                   </SheetContent>
@@ -431,7 +324,9 @@ export default function Store() {
                                   />
                                   <div>
                                     <p className="font-medium">{item.name}</p>
-                                    <p className="text-sm text-muted-foreground">${item.price} x {item.quantity || 1}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      ${item.price} x {item.quantity || 1}
+                                    </p>
                                   </div>
                                 </div>
                                 <Button
@@ -460,9 +355,9 @@ export default function Store() {
                         <Button
                           className="w-full"
                           onClick={() => {
-                            localStorage.setItem('cart', JSON.stringify(cart))
+                            localStorage.setItem("cart", JSON.stringify(cart))
                             setIsOpen(false)
-                            router.push('/checkout')
+                            router.push("/checkout")
                           }}
                         >
                           💳 Proceder al pago
@@ -476,13 +371,8 @@ export default function Store() {
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center gap-4">
                 <SearchProducts onSearch={setSearchTerm} />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleDarkMode}
-                  className="text-xl"
-                >
-                  {darkMode ? '🌙' : '☀️'}
+                <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-xl">
+                  {darkMode ? "🌙" : "☀️"}
                 </Button>
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                   <SheetTrigger asChild>
@@ -530,7 +420,9 @@ export default function Store() {
                                   />
                                   <div>
                                     <p className="font-medium">{item.name}</p>
-                                    <p className="text-sm text-muted-foreground">${item.price} x {item.quantity || 1}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      ${item.price} x {item.quantity || 1}
+                                    </p>
                                   </div>
                                 </div>
                                 <Button
@@ -559,9 +451,9 @@ export default function Store() {
                         <Button
                           className="w-full"
                           onClick={() => {
-                            localStorage.setItem('cart', JSON.stringify(cart))
+                            localStorage.setItem("cart", JSON.stringify(cart))
                             setIsOpen(false)
-                            router.push('/checkout')
+                            router.push("/checkout")
                           }}
                         >
                           💳 Proceder al pago
@@ -584,47 +476,50 @@ export default function Store() {
               className="container mx-auto px-4 space-y-6"
             >
               <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
-                ¡Bienvenido a la tienda más
+                Productos Veterinarios
                 <motion.span
                   key={highlightedWord}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent"
+                  className="block text-2xl md:text-4xl text-muted-foreground mt-4"
                 >
-                  {' '}{highlightedWord}{' '}
+                  Alta Calidad para Todo Tipo de Animales
                 </motion.span>
-                de La Habana! 🎉
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Donde cada producto viene con una sonrisa 😊 y los emojis son nuestro lenguaje favorito ✨
+                Medicamentos, suplementos y productos veterinarios de alta calidad para ganado bovino, porcino, aves y
+                más
               </p>
             </motion.div>
           </section>
         </Suspense>
 
         {/* Offers Slider */}
-        <Suspense fallback={
-          <div className="w-full overflow-hidden bg-gradient-to-r from-primary/5 via-background to-primary/5 py-8">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center gap-2 mb-6">
-                <Skeleton className="h-8 w-48" />
-                <Skeleton className="h-6 w-32" />
-              </div>
-              <div className="flex gap-6">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <OfferCardSkeleton key={i} />
-                ))}
+        <Suspense
+          fallback={
+            <div className="w-full overflow-hidden bg-gradient-to-r from-primary/5 via-background to-primary/5 py-8">
+              <div className="container mx-auto px-4">
+                <div className="flex items-center gap-2 mb-6">
+                  <Skeleton className="h-8 w-48" />
+                  <Skeleton className="h-6 w-32" />
+                </div>
+                <div className="flex gap-6">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <OfferCardSkeleton key={i} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        }>
+          }
+        >
           <OffersSlider />
         </Suspense>
 
         {/* Categories */}
-        <section className="py-12">
+        <section className="py-12 bg-muted/30">
           <div className="container mx-auto px-4">
+            <h3 className="text-2xl font-bold mb-8">Categorías de Productos</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.length === 0 ? (
                 <>
@@ -637,17 +532,14 @@ export default function Store() {
                   <Suspense key={category.id} fallback={<CategorySkeleton />}>
                     <motion.button
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`relative overflow-hidden rounded-xl p-4 h-32 ${selectedCategory === category.id
-                        ? 'ring-2 ring-primary'
-                        : 'hover:ring-2 hover:ring-primary/50'
+                      className={`relative overflow-hidden rounded-xl p-4 h-32 bg-white dark:bg-gray-800 ${selectedCategory === category.id ? "ring-2 ring-primary" : "hover:ring-2 hover:ring-primary/50"
                         }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-10`} />
                       <div className="relative h-full flex flex-col items-center justify-center gap-2">
                         <span className="text-4xl">{category.emoji}</span>
-                        <span className="font-medium">{category.name}</span>
+                        <span className="font-medium text-center text-sm">{category.name}</span>
                       </div>
                     </motion.button>
                   </Suspense>
@@ -660,6 +552,7 @@ export default function Store() {
         {/* Products Grid */}
         <section className="py-12">
           <div className="container mx-auto px-4">
+            <h3 className="text-2xl font-bold mb-8">Catálogo de Productos</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence>
                 {loading ? (
@@ -683,7 +576,7 @@ export default function Store() {
                         transition={{ duration: 0.3 }}
                       >
                         <Card
-                          className={`group relative overflow-hidden border-2 transition-colors hover:border-primary/50 ${hoveredProduct === product.id ? 'highlight' : ''}`}
+                          className="group relative overflow-hidden border hover:border-primary/50"
                           onMouseEnter={() => setHoveredProduct(product.id)}
                           onMouseLeave={() => setHoveredProduct(null)}
                         >
@@ -693,20 +586,44 @@ export default function Store() {
                                 src={product.image || "/placeholder.svg"}
                                 alt={product.name}
                                 fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                className="object-cover transition-transform duration-500 group-hover:scale-105"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                              {product.stock <= 5 && product.stock > 0 && (
+                                <div className="absolute top-2 right-2 bg-warning text-warning-foreground px-2 py-1 rounded text-sm">
+                                  Pocas unidades
+                                </div>
+                              )}
+                              {product.stock === 0 && (
+                                <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground px-2 py-1 rounded text-sm">
+                                  Agotado
+                                </div>
+                              )}
                             </div>
                             <div className="p-4">
                               <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                              <p className="text-muted-foreground">{product.description}</p>
+                              <p className="text-muted-foreground text-sm">{product.description}</p>
+                              {product.detailedDescription && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button variant="ghost" size="sm" className="mt-2 text-primary">
+                                        Ver detalles técnicos
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p>{product.detailedDescription}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
                             </div>
                           </CardContent>
-                          <CardFooter className="flex justify-between items-center p-4">
+                          <CardFooter className="flex justify-between items-center p-4 bg-muted/50">
                             <div className="flex items-center gap-2">
-                              <span className="text-2xl">💰</span>
                               <span className="font-bold text-md">
-                                {selectedCurrency && selectedCurrency.code === 'CUP' ? 'CUP ' : selectedCurrency?.symbol} 
+                                {selectedCurrency && selectedCurrency.code === "CUP"
+                                  ? "CUP "
+                                  : selectedCurrency?.symbol}
                                 {(Number(product.price) / (Number(selectedCurrency?.exchangeRate) || 1)).toFixed(2)}
                               </span>
                             </div>
@@ -720,9 +637,9 @@ export default function Store() {
                               <Button
                                 onClick={() => handleAddToCart(product)}
                                 disabled={product.stock === 0}
-                                className="rounded-full"
+                                variant={product.stock === 0 ? "secondary" : "default"}
                               >
-                                🛒 Agregar
+                                {product.stock === 0 ? "Sin existencias" : "Agregar al carrito"}
                               </Button>
                             </div>
                           </CardFooter>
@@ -737,40 +654,39 @@ export default function Store() {
         </section>
 
         {/* Footer */}
-        <footer className="mt-16 border-t">
+        <footer className="mt-16 border-t bg-muted/30">
           <div className="container mx-auto px-4 py-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="space-y-4">
-                <h3 className="text-xl font-bold">📍 Ubicación</h3>
+                <h3 className="text-xl font-bold">Ubicación</h3>
                 <p className="text-muted-foreground">
-                  Dasieloski Store<br />
-                  La Habana, Cuba 🇨🇺<br />
-                  Entregas en toda La Habana 🚚
+                  ValeA
+                  <br />
+                  La Habana, Cuba
+                  <br />
+                  Servicio a todo el Mundo
                 </p>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-bold">🔗 Enlaces</h3>
+                <h3 className="text-xl font-bold">Enlaces Útiles</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  <Button variant="link">🏠 Inicio</Button>
-                  <Button variant="link">📦 Productos</Button>
-                  <Button variant="link">📞 Contacto</Button>
-                  <Button variant="link">❓ Ayuda</Button>
+                  <Button variant="link">Inicio</Button>
+                  <Button variant="link">Productos</Button>
+                  <Button variant="link">Consultas</Button>
+                  <Button variant="link">Soporte Técnico</Button>
                 </div>
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-bold">📱 Síguenos</h3>
-                <div className="flex gap-4 text-2xl">
-                  <Button variant="ghost" size="icon">📸</Button>
-                  <Button variant="ghost" size="icon">👥</Button>
-                  <Button variant="ghost" size="icon">🐦</Button>
-                  <Button variant="ghost" size="icon">📱</Button>
+                <h3 className="text-xl font-bold">Contacto</h3>
+                <div className="space-y-2 text-muted-foreground">
+                  <p>Teléfono: +53 5 3002531</p>
+                  //<p>Email: info@vetagro.cu</p>
+                  <p>Horario: Lunes a Sábado 8:00 AM - 5:00 PM</p>
                 </div>
               </div>
             </div>
             <div className="mt-12 pt-8 border-t text-center">
-              <p className="text-muted-foreground">
-                © 2024 Dasieloski Store ✨ Todos los derechos reservados 🎉
-              </p>
+              <p className="text-muted-foreground">© 2025 VetAgro Suministros - Todos los derechos reservados</p>
             </div>
           </div>
         </footer>
