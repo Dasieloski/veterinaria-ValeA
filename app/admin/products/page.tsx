@@ -98,18 +98,12 @@ export default function ProductsPage() {
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, files } = e.target as HTMLInputElement & HTMLTextAreaElement & HTMLSelectElement
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, files } = e.target as HTMLInputElement & HTMLTextAreaElement
     if (name === 'image' && files) {
-      setFormData({
-        ...formData,
-        image: files[0],
-      })
+      setFormData(prev => ({ ...prev, image: files[0] }))
     } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      })
+      setFormData(prev => ({ ...prev, [name]: value }))
     }
   }
 
@@ -118,87 +112,73 @@ export default function ProductsPage() {
     setError(null)
     setSuccess(null)
 
-    const method = editingProduct ? 'PUT' : 'POST'
-
-    const form = new FormData()
-    if (editingProduct) {
-      form.append('id', editingProduct.id)
-    }
-    form.append('name', formData.name)
-    form.append('price', formData.price)
-    form.append('category', formData.category)
-    form.append('description', formData.description)
-    form.append('emoji', formData.emoji)
-    form.append('detailedDescription', formData.detailedDescription)
+    const submitData = new FormData()
+    submitData.append('name', formData.name)
+    submitData.append('price', formData.price)
+    submitData.append('category', formData.category)
+    submitData.append('description', formData.description)
+    submitData.append('emoji', formData.emoji)
+    submitData.append('detailedDescription', formData.detailedDescription)
     if (formData.image) {
-      form.append('image', formData.image)
+      submitData.append('image', formData.image)
     }
 
     try {
-      const url = '/api/products'
-      const res = await fetch(url, {
-        method,
-        body: form,
-      })
+      if (editingProduct) {
+        // Editar producto
+        const res = await fetch('/api/products', {
+          method: 'PUT',
+          body: submitData,
+        })
 
-      if (res.ok) {
-        const product = await res.json()
-        if (editingProduct) {
-          setProducts(products.map(p => p.id === product.id ? product : p))
+        if (res.ok) {
+          const updatedProduct = await res.json()
+          setProducts(products.map(prod => prod.id === updatedProduct.id ? updatedProduct : prod))
+          setIsOpen(false)
+          setEditingProduct(null)
+          setFormData({ name: '', price: '', category: '', description: '', emoji: '', detailedDescription: '', image: null })
           setSuccess('Producto actualizado exitosamente')
         } else {
-          setProducts([...products, product])
-          setSuccess('Producto creado exitosamente')
+          const errorData = await res.json()
+          console.error('Error al editar el producto:', errorData.error)
+          setError('Error al editar el producto')
         }
-        setIsOpen(false)
-        setEditingProduct(null)
-        setFormData({
-          name: '',
-          price: '',
-          category: '',
-          description: '',
-          emoji: '',
-          detailedDescription: '',
-          image: null,
-        })
       } else {
-        const errorData = await res.json()
-        setError(errorData.error || 'Error al guardar el producto')
+        // Crear nuevo producto
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          body: submitData,
+        })
+
+        if (res.ok) {
+          const newProduct = await res.json()
+          setProducts([...products, newProduct])
+          setIsOpen(false)
+          setFormData({ name: '', price: '', category: '', description: '', emoji: '', detailedDescription: '', image: null })
+          setSuccess('Producto creado exitosamente')
+        } else {
+          const errorData = await res.json()
+          console.error('Error al crear el producto:', errorData.error)
+          setError('Error al crear el producto')
+        }
       }
     } catch (error) {
-      console.error('Error al guardar el producto:', error)
-      setError('Error al guardar el producto')
+      console.error('Error al enviar el formulario:', error)
+      setError('Error al enviar el formulario')
     }
-  }
-
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product)
-    setFormData({
-      name: product.name,
-      price: product.price.toString(),
-      category: product.category.id,
-      description: product.description,
-      emoji: product.emoji,
-      image: null,
-      detailedDescription: product.detailedDescription || product.description,
-    })
-    setIsOpen(true)
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar este producto?')) return
-
     try {
       const res = await fetch('/api/products', {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
       })
 
       if (res.ok) {
-        setProducts(products.filter(product => product.id !== id))
+        setProducts(products.filter(prod => prod.id !== id))
+        setSuccess('Producto eliminado exitosamente')
       } else {
         const errorData = await res.json()
         console.error('Error al eliminar el producto:', errorData.error)
@@ -229,12 +209,13 @@ export default function ProductsPage() {
                 Añade o modifica los detalles del producto aquí. Asegúrate de completar todos los campos requeridos.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
               <div>
                 <Label htmlFor="name">Nombre</Label>
                 <Input
                   id="name"
                   name="name"
+                  type="text"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
@@ -256,15 +237,16 @@ export default function ProductsPage() {
                 <Label htmlFor="category">Categoría</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value: string) => setFormData({ ...formData, category: value })}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                  required
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map((cat) => (
+                    {categories.map(cat => (
                       <SelectItem key={cat.id} value={cat.id}>
-                        {cat.emoji} {cat.name}
+                        {cat.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -285,7 +267,18 @@ export default function ProductsPage() {
                 <Input
                   id="emoji"
                   name="emoji"
+                  type="text"
                   value={formData.emoji}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="detailedDescription">Descripción Detallada</Label>
+                <Textarea
+                  id="detailedDescription"
+                  name="detailedDescription"
+                  value={formData.detailedDescription}
                   onChange={handleInputChange}
                   required
                 />
@@ -299,16 +292,6 @@ export default function ProductsPage() {
                   accept="image/*"
                   onChange={handleInputChange}
                   required={!editingProduct}
-                />
-              </div>
-              <div>
-                <Label htmlFor="detailedDescription">Descripción Detallada</Label>
-                <Textarea
-                  id="detailedDescription"
-                  name="detailedDescription"
-                  value={formData.detailedDescription}
-                  onChange={handleInputChange}
-                  required
                 />
               </div>
               <div className="flex gap-2">
@@ -361,7 +344,7 @@ export default function ProductsPage() {
                 <CardContent className="p-0">
                   <div className="relative aspect-square">
                     <Image
-                      src={product_.image}
+                      src={product.image}
                       alt={product.name}
                       fill
                       className="object-cover"
@@ -391,7 +374,19 @@ export default function ProductsPage() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => handleEdit(product)}
+                    onClick={() => {
+                      setEditingProduct(product)
+                      setFormData({
+                        name: product.name,
+                        price: product.price.toString(),
+                        category: product.categoryId,
+                        description: product.description,
+                        emoji: product.emoji,
+                        detailedDescription: product.detailedDescription || '',
+                        image: null,
+                      })
+                      setIsOpen(true)
+                    }}
                   >
                     ✏️ Editar
                   </Button>

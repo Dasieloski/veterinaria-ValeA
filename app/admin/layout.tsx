@@ -43,6 +43,11 @@ export default function AdminLayout({
     return null
   }
 
+  // Si estamos en la página de login, renderizar solo los children sin el AdminLayout
+  if (pathname === '/admin/auth/login') {
+    return <>{children}</>
+  }
+
   const handleLogout = async () => {
     try {
       const response = await fetch('/api/admin/auth/logout', {

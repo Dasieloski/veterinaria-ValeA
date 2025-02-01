@@ -1,17 +1,10 @@
+/* eslint-disable */
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import fs from 'fs'
-import path from 'path'
-
-// Definir la interfaz para los archivos
-interface FileType {
-    filename: string
-    contentType: string
-    path: string
-    url: string
-}
+import { supabaseAdmin } from '@/lib/supabaseClient'
 
 const prisma = new PrismaClient()
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 
 export const config = {
     api: {
@@ -19,113 +12,18 @@ export const config = {
     },
 }
 
-const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-
-// Asegurarse de que el directorio de subida exista
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true })
-}
-
-// Función para parsear multipart/form-data
-async function parseMultipartForm(request: Request) {
-    const contentType = request.headers.get('content-type')
-    if (!contentType || !contentType.includes('multipart/form-data')) {
-        throw new Error('Content-Type no es multipart/form-data')
-    }
-
-    const boundaryMatch = contentType.match(/boundary=(.+)$/)
-    if (!boundaryMatch) {
-        throw new Error('No se encontró el boundary en el Content-Type')
-    }
-
-    const boundary = boundaryMatch[1]
-    const buffer = await request.arrayBuffer()
-    const bytes = new Uint8Array(buffer)
-    const boundaryBytes = new TextEncoder().encode(`--${boundary}`)
-    const parts: { fields: Record<string, string>; files: Record<string, FileType> } = {
-        fields: {},
-        files: {},
-    }
-
-    // Función para buscar el índice de una subcadena en un array de bytes
-    function indexOf(source: Uint8Array, target: Uint8Array, start: number = 0): number {
-        outer: for (let i = start; i <= source.length - target.length; i++) {
-            for (let j = 0; j < target.length; j++) {
-                if (source[i + j] !== target[j]) {
-                    continue outer
-                }
-            }
-            return i
-        }
-        return -1
-    }
-
-    let pos = 0
-    const partStart = indexOf(bytes, boundaryBytes, pos)
-    if (partStart === -1) return parts
-
-    pos = partStart + boundaryBytes.length + 2 // Salta \r\n después del boundary
-
-    while (pos < bytes.length) {
-        const nextBoundary = indexOf(bytes, boundaryBytes, pos)
-        if (nextBoundary === -1) break
-
-        const part = bytes.slice(pos, nextBoundary - 2) // Salta \r\n antes del boundary
-        pos = nextBoundary + boundaryBytes.length + 2 // Salta \r\n después del boundary
-
-        const headerEnd = part.indexOf(0x0d) // Encuentra \r
-        const headers = new TextDecoder().decode(part.slice(0, headerEnd)).split('\r\n')
-        const contentDisposition = headers.find(header => header.startsWith('Content-Disposition'))
-        if (!contentDisposition) continue
-
-        const nameMatch = contentDisposition.match(/name="([^"]+)"/)
-        const filenameMatch = contentDisposition.match(/filename="([^"]+)"/)
-        if (!nameMatch) continue
-
-        const name = nameMatch[1]
-        if (filenameMatch) {
-            // Archivo
-            const filename = filenameMatch[1]
-            const contentTypeHeader = headers.find(header => header.startsWith('Content-Type'))
-            const contentType = contentTypeHeader ? contentTypeHeader.split(': ')[1] : 'application/octet-stream'
-            const fileData = part.slice(headerEnd + 4) // Salta \r\n\r\n
-
-            // Guardar el archivo
-            const fileExt = path.extname(filename)
-            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif']
-            if (!allowedExtensions.includes(fileExt.toLowerCase())) {
-                throw new Error('Tipo de archivo no permitido')
-            }
-
-            const fileName = `${Date.now()}-${path.basename(filename, fileExt)}${fileExt}`
-            const filePath = path.join(uploadDir, fileName)
-            fs.writeFileSync(filePath, Buffer.from(fileData))
-            const imageUrl = `/uploads/${fileName}`
-
-            parts.files[name] = {
-                filename,
-                contentType,
-                path: filePath,
-                url: imageUrl,
-            }
-        } else {
-            // Campo
-            const value = new TextDecoder().decode(part.slice(headerEnd + 4)) // Salta \r\n\r\n
-            parts.fields[name] = value
-        }
-    }
-
-    return parts
-}
-
-export async function GET() {
+export async function GET(request: Request) {
     try {
-        const products = await prisma.product.findMany({
-            include: {
-                category: true, // Incluir categoría relacionada
-            },
+        const productos = await prisma.product.findMany({
+            include: { category: true },
         })
-        return NextResponse.json(products, { status: 200 })
+
+        // Verificar si se encontraron productos
+        if (!productos || productos.length === 0) {
+            return NextResponse.json({ error: 'No se encontraron productos' }, { status: 404 })
+        }
+
+        return NextResponse.json(productos, { status: 200 })
     } catch (error) {
         console.error('Error en GET /api/products:', error)
         return NextResponse.json({ error: 'Error al obtener los productos' }, { status: 500 })
@@ -134,54 +32,62 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const parts = await parseMultipartForm(request)
-        const { name, price, category, description, emoji, detailedDescription } = parts.fields
-        const file = parts.files.image
+        const formData = await request.formData()
+        const name = formData.get('name') as string
+        const price = formData.get('price') as string
+        const category = formData.get('category') as string
+        const description = formData.get('description') as string
+        const emoji = formData.get('emoji') as string
+        const detailedDescription = formData.get('detailedDescription') as string | null
+        const file = formData.get('image') as File
 
         // Validar campos requeridos
         if (!name || !price || !category || !description || !emoji || !file) {
-            // Eliminar archivo si falta algún campo
-            if (file && fs.existsSync(file.path)) {
-                fs.unlinkSync(file.path)
-            }
             return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
         }
 
-        const imageUrl = file.url
+        // Validar tipo de archivo
+        const allowedExtensions = ['image/jpeg', 'image/png', 'image/gif']
+        if (!allowedExtensions.includes(file.type)) {
+            return NextResponse.json({ error: 'Tipo de archivo no permitido' }, { status: 400 })
+        }
 
-        console.log('Campos recibidos:', parts.fields)
-        console.log('Archivo recibido:', parts.files.image)
-        console.log('Creando producto con los siguientes datos:', {
-            name,
-            price: parseFloat(price),
-            categoryId: category,
-            description,
-            detailedDescription: detailedDescription || description,
-            emoji,
-            image: imageUrl,
-        })
+        // Subir archivo a Supabase usando el cliente admin
+        const fileName = `${Date.now()}-${file.name}`
+        const { data, error: uploadError } = await supabaseAdmin
+            .storage
+            .from('product-images')
+            .upload(fileName, file, {
+                contentType: file.type,
+                upsert: false,
+            })
 
+        if (uploadError) {
+            console.error('Error al subir a Supabase:', uploadError)
+            return NextResponse.json({ error: 'Error al subir la imagen' }, { status: 500 })
+        }
+
+        // Obtener la URL pública de la imagen
+        const imageUrl = `${supabaseUrl}/storage/v1/object/public/product-images/${fileName}`
+
+        // Crear el producto en la base de datos
         const newProduct = await prisma.product.create({
             data: {
                 name,
                 price: parseFloat(price),
-                category: {
-                    connect: { id: String(category) },
-                },
+                category: { connect: { id: String(category) } },
                 description,
                 detailedDescription: detailedDescription || description,
                 emoji,
                 image: imageUrl,
             },
-            include: {
-                category: true,
-            },
+            include: { category: true },
         })
 
         return NextResponse.json(newProduct, { status: 201 })
     } catch (error: unknown) {
         if (error instanceof Error) {
-            console.error(error.message)
+            console.error('Error al crear el producto:', error)
             return NextResponse.json({ error: error.message }, { status: 500 })
         }
         console.error('Error desconocido al crear el producto:', error)
@@ -191,81 +97,87 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const parts = await parseMultipartForm(request)
-        const { id, name, price, category, description, emoji } = parts.fields
-        const file = parts.files.image
+        const formData = await request.formData()
+        const id = formData.get('id') as string
+        const name = formData.get('name') as string
+        const price = formData.get('price') as string
+        const category = formData.get('category') as string
+        const description = formData.get('description') as string
+        const emoji = formData.get('emoji') as string
+        const detailedDescription = formData.get('detailedDescription') as string | null
+        const file = formData.get('image') as File | null
 
         if (!id || !name || !price || !category || !description || !emoji) {
-            // Eliminar archivo si falta algún campo
-            if (file && fs.existsSync(file.path)) {
-                fs.unlinkSync(file.path)
-            }
             return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
         }
 
-        // Obtener el producto existente antes de manejar la imagen
+        // Obtener el producto existente
         const existingProduct = await prisma.product.findUnique({ where: { id } })
         if (!existingProduct) {
-            // Eliminar archivo si el producto no existe
-            if (file && fs.existsSync(file.path)) {
-                fs.unlinkSync(file.path)
-            }
             return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
         }
 
-        let imageUrl: string | undefined = undefined
+        let imageUrl = existingProduct.image
 
         if (file) {
-            const fileExt = path.extname(file.filename)
-            const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif']
-            if (!allowedExtensions.includes(fileExt.toLowerCase())) {
-                if (fs.existsSync(file.path)) {
-                    fs.unlinkSync(file.path)
-                }
+            // Validar tipo de archivo
+            const allowedExtensions = ['image/jpeg', 'image/png', 'image/gif']
+            if (!allowedExtensions.includes(file.type)) {
                 return NextResponse.json({ error: 'Tipo de archivo no permitido' }, { status: 400 })
             }
 
-            imageUrl = file.url
-            console.log('Nueva URL de la imagen:', imageUrl)
+            // Subir nueva imagen a Supabase
+            const fileName = `${Date.now()}-${file.name}`
+            const { data, error: uploadError } = await supabaseAdmin
+                .storage
+                .from('product-images')
+                .upload(fileName, file, {
+                    contentType: file.type,
+                    upsert: false,
+                })
 
-            // Eliminar la imagen antigua si existe
-            if (existingProduct.image) {
-                const oldImagePath = path.join(process.cwd(), 'public', existingProduct.image)
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlinkSync(oldImagePath)
-                    console.log('Imagen antigua eliminada:', oldImagePath)
+            if (uploadError) {
+                console.error('Error al subir a Supabase:', uploadError)
+                return NextResponse.json({ error: 'Error al subir la imagen' }, { status: 500 })
+            }
+
+            // Obtener la nueva URL pública
+            imageUrl = `${supabaseUrl}/storage/v1/object/public/product-images/${fileName}`
+
+            // (Opcional) Eliminar la imagen antigua de Supabase
+            const oldFileName = existingProduct.image.split('/').pop()
+            if (oldFileName) {
+                const { error: deleteError } = await supabaseAdmin
+                    .storage
+                    .from('product-images')
+                    .remove([oldFileName])
+
+                if (deleteError) {
+                    console.error('Error al eliminar la imagen antigua:', deleteError)
                 }
             }
         }
 
+        // Actualizar el producto en la base de datos
         const updatedProduct = await prisma.product.update({
             where: { id },
             data: {
                 name,
                 price: parseFloat(price),
-                categoryId: category,
+                categoryId: String(category),
                 description,
-                detailedDescription: parts.fields.detailedDescription || description,
+                detailedDescription: detailedDescription || description,
                 emoji,
-                image: imageUrl || existingProduct.image,
+                image: imageUrl,
             },
-            include: {
-                category: true,
-            },
+            include: { category: true },
         })
-
-        console.log('Producto actualizado:', updatedProduct)
 
         return NextResponse.json(updatedProduct, { status: 200 })
     } catch (error: unknown) {
-        console.error(error)
-        if (
-            typeof error === 'object' &&
-            error !== null &&
-            'code' in error &&
-            (error as { code: string }).code === 'P2025'
-        ) {
-            return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
+        if (error instanceof Error) {
+            console.error('Error al actualizar el producto:', error)
+            return NextResponse.json({ error: error.message }, { status: 500 })
         }
 
         return NextResponse.json({ error: 'Error al actualizar el producto' }, { status: 500 })
@@ -282,10 +194,16 @@ export async function DELETE(request: Request) {
 
         const product = await prisma.product.findUnique({ where: { id } })
         if (product && product.image) {
-            const imagePath = path.join(process.cwd(), 'public', product.image)
-            if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath)
-                console.log('Imagen eliminada:', imagePath)
+            const fileName = product.image.split('/').pop()
+            if (fileName) {
+                const { error: deleteError } = await supabaseAdmin
+                    .storage
+                    .from('product-images')
+                    .remove([fileName])
+
+                if (deleteError) {
+                    console.error('Error al eliminar la imagen de Supabase:', deleteError)
+                }
             }
         }
 
