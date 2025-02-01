@@ -45,6 +45,7 @@ model Product {
   description         String
   emoji               String
   detailedDescription String?  @db.Text
+  stock               Int      @default(0)
   category            Category @relation(fields: [categoryId], references: [id])
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -89,4 +90,32 @@ model Offer {
   updatedAt   DateTime @updatedAt
 
   @@map("offers")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+//productos del carrito a mostrar en el panel de admin
+model Order {
+  id              Int         @id @default(autoincrement())
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  total           Float
+  createdAt       DateTime    @default(now())
+  status          OrderStatus @default(PENDING)
+  orderItems      OrderItem[]
+}
+
+model OrderItem {
+  id        Int    @id @default(autoincrement())
+  productId String
+  name      String
+  price     Float
+  quantity  Int
+  order     Order  @relation(fields: [orderId], references: [id])
+  orderId   Int
 }

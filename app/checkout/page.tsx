@@ -22,27 +22,83 @@ export default function CheckoutPage() {
     return calculatedTotal
   }, [getCartTotal])
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log("Inicio de handleSubmit")
+
     const formData = new FormData(e.currentTarget)
+
+    const name = formData.get("name") as string
+    const phone = formData.get("phone") as string
+    const address = formData.get("address") as string
+
+    console.log("Datos del formulario:", { name, phone, address })
+
+    const cartItems = cart.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity || 1,
+    }))
+
+    console.log("Items del carrito a enviar:", cartItems)
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, address, cartItems, total }),
+      })
+
+      console.log("Respuesta de la API:", response.status)
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Error al guardar el pedido:', errorData.error)
+        return
+      }
+
+      const order = await response.json()
+      console.log('Pedido guardado:', order)
+    } catch (error) {
+      console.error('Error al conectar con la API:', error)
+      return
+    }
 
     let message = "🛍️ *Nuevo Pedido en Dasieloski Store*\n\n"
     message += "👤 *Datos del Cliente:*\n"
-    message += `- Nombre: ${formData.get("name")}\n`
-    message += `- Teléfono: ${formData.get("phone")}\n\n`
+    message += `- Nombre: ${name}\n`
+    message += `- Teléfono: ${phone}\n\n`
     message += "📍 *Dirección de Envío:*\n"
-    message += `${formData.get("address")}\n\n`
+    message += `${address}\n\n`
     message += "🛒 *Productos:*\n"
 
     cart.forEach((item) => {
-      message += `- ${item.emoji} ${item.name}: $${item.price} x ${item.quantity || 1}\n`
+      message += `- ${item.emoji || '📦'} ${item.name}: $${item.price} x ${item.quantity || 1}\n`
     })
 
     message += `\n💰 *Total:* $${total.toFixed(2)}`
     const encodedMessage = encodeURIComponent(message)
     const phoneNumber = "+5354710329"
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank")
+
+    console.log("Mensaje para WhatsApp:", message)
+
+    try {
+      const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
+      console.log("URL de WhatsApp a abrir:", whatsappURL)
+      const whatsappWindow = window.open(whatsappURL, "_blank")
+      
+      if (whatsappWindow) {
+        console.log("WhatsApp abierto correctamente")
+      } else {
+        console.warn("Bloqueador de ventanas emergentes impidió abrir WhatsApp")
+      }
+    } catch (error) {
+      console.error("Error al abrir WhatsApp:", error)
+    }
+
     clearCart()
+    console.log("Carrito limpiado")
   }
 
   return (

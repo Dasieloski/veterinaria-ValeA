@@ -1,18 +1,12 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { Menu } from 'lucide-react'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Menu } from "lucide-react"
 
 export default function AdminLayout({
   children,
@@ -26,17 +20,17 @@ export default function AdminLayout({
 
   useEffect(() => {
     // Recuperar preferencia de tema
-    const isDark = localStorage.getItem('adminDarkMode') !== 'false'
+    const isDark = localStorage.getItem("adminDarkMode") !== "false"
     setDarkMode(isDark)
-    document.documentElement.classList.toggle('dark', isDark)
+    document.documentElement.classList.toggle("dark", isDark)
 
     setIsMounted(true)
   }, [])
 
   const toggleTheme = () => {
     setDarkMode(!darkMode)
-    document.documentElement.classList.toggle('dark')
-    localStorage.setItem('adminDarkMode', (!darkMode).toString())
+    document.documentElement.classList.toggle("dark")
+    localStorage.setItem("adminDarkMode", (!darkMode).toString())
   }
 
   if (!isMounted) {
@@ -44,32 +38,34 @@ export default function AdminLayout({
   }
 
   // Si estamos en la página de login, renderizar solo los children sin el AdminLayout
-  if (pathname === '/admin/auth/login') {
+  if (pathname === "/admin/auth/login") {
     return <>{children}</>
   }
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/admin/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/admin/auth/logout", {
+        method: "POST",
       })
 
       if (response.ok) {
-        router.push('/admin/auth/login')
+        router.push("/admin/auth/login")
       } else {
-        console.error('Error al cerrar sesión')
+        console.error("Error al cerrar sesión")
       }
     } catch (error) {
-      console.error('Error al cerrar sesión:', error)
+      console.error("Error al cerrar sesión:", error)
     }
   }
 
   const menuItems = [
-    { path: '/admin', label: '📊 Dashboard', emoji: '📊' },
-    { path: '/admin/categories', label: '📁 Categorías', emoji: '📁' },
-    { path: '/admin/products', label: '📦 Productos', emoji: '📦' },
-    { path: '/admin/offers', label: '🔥 Ofertas', emoji: '🔥' },
-    { path: '/admin/currencies', label: '💰 Monedas', emoji: '💰' },
+    { path: "/admin", label: "📊 Dashboard", emoji: "📊" },
+    { path: "/admin/categories", label: "📁 Categorías", emoji: "📁" },
+    { path: "/admin/products", label: "📦 Productos", emoji: "📦" },
+    { path: "/admin/offers", label: "🔥 Ofertas", emoji: "🔥" },
+    { path: "/admin/currencies", label: "💰 Monedas", emoji: "💰" },
+    { path: "/admin/stock", label: "📦 Gestión de Stock", emoji: "📦" },
+    { path: "/admin/carts", label: "🛒 Carritos de Clientes", emoji: "🛒" },
   ]
 
   return (
@@ -90,10 +86,7 @@ export default function AdminLayout({
                 <div className="flex flex-col gap-2 mt-4">
                   {menuItems.map((item) => (
                     <Link key={item.path} href={item.path}>
-                      <Button 
-                        variant={pathname === item.path ? "secondary" : "ghost"}
-                        className="w-full justify-start"
-                      >
+                      <Button variant={pathname === item.path ? "secondary" : "ghost"} className="w-full justify-start">
                         {item.label}
                       </Button>
                     </Link>
@@ -108,22 +101,13 @@ export default function AdminLayout({
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="text-xl"
-            >
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-xl">
               {darkMode ? "🌙" : "☀️"}
             </Button>
             <Link href="/" className="hidden sm:block">
               <Button variant="ghost">🏪 Ver tienda</Button>
             </Link>
-            <Button 
-              variant="destructive"
-              onClick={handleLogout}
-              className="hidden sm:flex"
-            >
+            <Button variant="destructive" onClick={handleLogout} className="hidden sm:flex">
               🚪 Cerrar sesión
             </Button>
             <Sheet>
@@ -139,11 +123,7 @@ export default function AdminLayout({
                       🏪 Ver tienda
                     </Button>
                   </Link>
-                  <Button 
-                    variant="destructive"
-                    onClick={handleLogout}
-                    className="w-full justify-start"
-                  >
+                  <Button variant="destructive" onClick={handleLogout} className="w-full justify-start">
                     🚪 Cerrar sesión
                   </Button>
                 </div>
@@ -163,10 +143,7 @@ export default function AdminLayout({
                 exit={{ opacity: 0, x: -20 }}
               >
                 <Link href={item.path}>
-                  <Button 
-                    variant={pathname === item.path ? "secondary" : "ghost"}
-                    className="w-full justify-start"
-                  >
+                  <Button variant={pathname === item.path ? "secondary" : "ghost"} className="w-full justify-start">
                     {item.label}
                   </Button>
                 </Link>
@@ -190,3 +167,4 @@ export default function AdminLayout({
     </div>
   )
 }
+
