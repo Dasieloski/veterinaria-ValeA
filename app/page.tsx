@@ -212,11 +212,12 @@ export default function Store() {
 
   // Filtrar productos
   const filteredProducts = products.filter((product) => {
-    const matchesCategory = selectedCategory === "todos" || product.category.name.toLowerCase() === selectedCategory
+    const matchesCategory =
+      selectedCategory === "todos" || product.category.id === selectedCategory;
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesCategory && matchesSearch
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
   })
 
   React.useEffect(() => {
@@ -680,7 +681,7 @@ export default function Store() {
                 <h3 className="text-xl font-bold">Contacto</h3>
                 <div className="space-y-2 text-muted-foreground">
                   <p>Teléfono: +53 5 3002531</p>
-                  //<p>Email: info@vetagro.cu</p>
+                  <p>Email: info@vetagro.cu</p>
                   <p>Horario: Lunes a Sábado 8:00 AM - 5:00 PM</p>
                 </div>
               </div>

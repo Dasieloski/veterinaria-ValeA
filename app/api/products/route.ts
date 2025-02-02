@@ -103,92 +103,101 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-    try {
-        const formData = await request.formData()
-        const id = formData.get('id') as string
-        const name = formData.get('name') as string
-        const price = formData.get('price') as string
-        const category = formData.get('category') as string
-        const description = formData.get('description') as string
-        const emoji = formData.get('emoji') as string
-        const detailedDescription = formData.get('detailedDescription') as string | null
-        const file = formData.get('image') as File | null
+  try {
+    const formData = await request.formData()
+    const id = formData.get('id') as string
+    const name = formData.get('name') as string
+    const price = formData.get('price') as string
+    const category = formData.get('category') as string
+    const description = formData.get('description') as string
+    const emoji = formData.get('emoji') as string
+    const detailedDescription = formData.get('detailedDescription') as string | null
+    let imageUrl: string | undefined = undefined
 
-        if (!id || !name || !price || !category || !description || !emoji) {
-            return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
-        }
+    // Validar campos requeridos
+    if (!id || !name || !price || !category || !description || !emoji) {
+      return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
+    }
 
-        // Obtener el producto existente
-        const existingProduct = await prisma.product.findUnique({ where: { id } })
-        if (!existingProduct) {
-            return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
-        }
+    // Obtener el producto existente
+    const existingProduct = await prisma.product.findUnique({ where: { id } })
+    if (!existingProduct) {
+      return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
+    }
 
-        let imageUrl = existingProduct.image
+    // Manejar la imagen si se proporciona una nueva
+    if (formData.has('image') && formData.get('image') instanceof File) {
+      const file = formData.get('image') as File
 
-        if (file) {
-            // Validar tipo de archivo
-            const allowedExtensions = ['image/jpeg', 'image/png', 'image/gif']
-            if (!allowedExtensions.includes(file.type)) {
-                return NextResponse.json({ error: 'Tipo de archivo no permitido' }, { status: 400 })
-            }
+      // Validar tipo de archivo
+      const allowedExtensions = ['image/jpeg', 'image/png', 'image/gif']
+      if (!allowedExtensions.includes(file.type)) {
+        return NextResponse.json({ error: 'Tipo de archivo no permitido' }, { status: 400 })
+      }
 
-            // Subir nueva imagen a Supabase
-            const fileName = `${Date.now()}-${file.name}`
-            const { data, error: uploadError } = await supabaseAdmin
-                .storage
-                .from('product-images')
-                .upload(fileName, file, {
-                    contentType: file.type,
-                    upsert: false,
-                })
+      // Sanitizar el nombre del archivo
+      const sanitizeFileName = (filename: string) => {
+        return filename.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\.-]/g, '')
+      }
 
-            if (uploadError) {
-                console.error('Error al subir a Supabase:', uploadError)
-                return NextResponse.json({ error: 'Error al subir la imagen' }, { status: 500 })
-            }
+      const originalFileName = sanitizeFileName(file.name)
+      const fileName = `${Date.now()}-${originalFileName}`
 
-            // Obtener la nueva URL pública
-            imageUrl = `${supabaseUrl}/storage/v1/object/public/product-images/${fileName}`
-
-            // (Opcional) Eliminar la imagen antigua de Supabase
-            const oldFileName = existingProduct.image.split('/').pop()
-            if (oldFileName) {
-                const { error: deleteError } = await supabaseAdmin
-                    .storage
-                    .from('product-images')
-                    .remove([oldFileName])
-
-                if (deleteError) {
-                    console.error('Error al eliminar la imagen antigua:', deleteError)
-                }
-            }
-        }
-
-        // Actualizar el producto en la base de datos
-        const updatedProduct = await prisma.product.update({
-            where: { id },
-            data: {
-                name,
-                price: parseFloat(price),
-                categoryId: String(category),
-                description,
-                detailedDescription: detailedDescription || description,
-                emoji,
-                image: imageUrl,
-            },
-            include: { category: true },
+      // Subir archivo a Supabase usando el cliente admin
+      const { data, error: uploadError } = await supabaseAdmin
+        .storage
+        .from('product-images')
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: false,
         })
 
-        return NextResponse.json(updatedProduct, { status: 200 })
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            console.error('Error al actualizar el producto:', error)
-            return NextResponse.json({ error: error.message }, { status: 500 })
-        }
+      if (uploadError) {
+        console.error('Error al subir a Supabase:', uploadError)
+        return NextResponse.json({ error: 'Error al subir la imagen' }, { status: 500 })
+      }
 
-        return NextResponse.json({ error: 'Error al actualizar el producto' }, { status: 500 })
+      // Obtener la nueva URL pública
+      imageUrl = `${supabaseUrl}/storage/v1/object/public/product-images/${fileName}`
+
+      // (Opcional) Eliminar la imagen antigua de Supabase
+      const oldFileName = existingProduct.image.split('/').pop()
+      if (oldFileName) {
+        const { error: deleteError } = await supabaseAdmin
+          .storage
+          .from('product-images')
+          .remove([oldFileName])
+
+        if (deleteError) {
+          console.error('Error al eliminar la imagen antigua:', deleteError)
+        }
+      }
     }
+
+    // Actualizar el producto en la base de datos
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        name,
+        price: parseFloat(price),
+        categoryId: String(category),
+        description,
+        detailedDescription: detailedDescription || description,
+        emoji,
+        image: imageUrl || existingProduct.image, // Mantener la imagen existente si no se actualiza
+      },
+      include: { category: true },
+    })
+
+    return NextResponse.json(updatedProduct, { status: 200 })
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error al actualizar el producto:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ error: 'Error al actualizar el producto' }, { status: 500 })
+  }
 }
 
 export async function DELETE(request: Request) {
