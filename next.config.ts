@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['iilyvqdglsibtocvjxjd.supabase.co'],
+    domains: [
+      'ppynynwcqyrokafwyxkq.supabase.co',
+    ],
   },
 };
 
