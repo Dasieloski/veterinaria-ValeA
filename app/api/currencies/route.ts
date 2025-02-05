@@ -14,8 +14,8 @@ export async function POST(request: Request) {
   const { code, symbol, exchangeRate } = data
 
   // Verificar que la moneda "CUP" no se pueda crear de nuevo
-  if (code === 'CUP') {
-    return NextResponse.json({ error: 'La moneda CUP ya existe.' }, { status: 400 })
+  if (code === 'USD') {
+    return NextResponse.json({ error: 'La moneda USD ya existe.' }, { status: 400 })
   }
 
   const newCurrency = await prisma.currency.create({

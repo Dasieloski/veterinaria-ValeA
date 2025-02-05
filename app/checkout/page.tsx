@@ -69,6 +69,18 @@ export default function CheckoutPage() {
       const order = await response.json()
       console.log('Pedido guardado:', order)
 
+      // Obtener todas las monedas desde la API
+      const currenciesResponse = await fetch('/api/currencies')
+      const currencies: Currency[] = await currenciesResponse.json()
+
+      // Calcular el total en cada moneda
+      const totalsInAllCurrencies = currencies.map(currency => ({
+        code: currency.code,
+        symbol: currency.symbol,
+        total: (total * Number(currency.exchangeRate)).toFixed(2),
+      }))
+
+      // Construir el mensaje de WhatsApp
       let message = "🛍️ *Nuevo Pedido en ValeA Store*\n\n"
       message += "👤 *Datos del Cliente:*\n"
       message += `- Nombre: ${name}\n`
@@ -81,9 +93,14 @@ export default function CheckoutPage() {
         message += `- ${item.emoji || '📦'} ${item.name}: $${item.price} x ${item.quantity || 1}\n`
       })
 
-      message += `\n💰 *Total:* $${total.toFixed(2)}`
+      message += `\n💰 *Total en todas las monedas:*\n`
+
+      totalsInAllCurrencies.forEach(currency => {
+        message += `${currency.symbol} ${currency.code}: ${currency.total}\n`
+      })
+
       const encodedMessage = encodeURIComponent(message)
-      const phoneNumber = "5354710329" // Sin el '+'
+      const phoneNumber = "5353002531" // Sin el '+'
 
       const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
       whatsappWindow.location.href = whatsappURL

@@ -622,10 +622,10 @@ export default function Store() {
                           <CardFooter className="flex justify-between items-center p-4 bg-muted/50">
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-md">
-                                {selectedCurrency && selectedCurrency.code === "CUP"
-                                  ? "CUP "
+                                {selectedCurrency && selectedCurrency.code === "USD"
+                                  ? "USD "
                                   : selectedCurrency?.symbol}
-                                {(Number(product.price) / (Number(selectedCurrency?.exchangeRate) || 1)).toFixed(2)}
+                                {(Number(product.price) * (Number(selectedCurrency?.exchangeRate) || 1)).toFixed(2)}
                               </span>
                             </div>
                             <div className="flex gap-2">
@@ -640,7 +640,7 @@ export default function Store() {
                                 disabled={product.stock === 0}
                                 variant={product.stock === 0 ? "secondary" : "default"}
                               >
-                                {product.stock === 0 ? "Sin existencias" : "Agregar al carrito"}
+                                {product.stock === 0 ? "🚫📦" : "🛒➕"}
                               </Button>
                             </div>
                           </CardFooter>
@@ -681,13 +681,13 @@ export default function Store() {
                 <h3 className="text-xl font-bold">Contacto</h3>
                 <div className="space-y-2 text-muted-foreground">
                   <p>Teléfono: +53 5 3002531</p>
-                  <p>Email: info@vetagro.cu</p>
+                 {/*  <p>Email: info@vetagro.cu</p> */}
                   <p>Horario: Lunes a Sábado 8:00 AM - 5:00 PM</p>
                 </div>
               </div>
             </div>
             <div className="mt-12 pt-8 border-t text-center">
-              <p className="text-muted-foreground">© 2025 VetAgro Suministros - Todos los derechos reservados</p>
+              <p className="text-muted-foreground">© 2025 ValeA Suministros - Todos los derechos reservados</p>
             </div>
           </div>
         </footer>
