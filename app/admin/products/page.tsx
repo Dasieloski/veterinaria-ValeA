@@ -66,30 +66,23 @@ export default function ProductsPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    category: '',
-    description: '',
-    emoji: '',
-    detailedDescription: '',
+    name: "",
+    price: "",
+    category: "",
+    description: "",
+    emoji: "",
+    detailedDescription: "",
     image: null as File | null,
   })
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const [currency, setCurrency] = useState<string>('USD')
-  const currencies = [
-    { value: 'USD', label: '$ USD' },
-    { value: 'EUR', label: '€ EUR' },
-    { value: 'GBP', label: '£ GBP' }
-  ]
-
   // Nuevos estados para búsqueda y filtrado
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({ min: '', max: '' })
-  const [sortOrder, setSortOrder] = useState<'name-asc' | 'name-desc' | 'price-asc' | 'price-desc'>('name-asc')
+  const [priceRange, setPriceRange] = useState<{ min: string; max: string }>({ min: "", max: "" })
+  const [sortOrder, setSortOrder] = useState<"name-asc" | "name-desc" | "price-asc" | "price-desc">("name-asc")
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false)
 
   useEffect(() => {
@@ -100,13 +93,13 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch('/api/products')
-      if (!res.ok) throw new Error('Error al obtener los productos')
+      const res = await fetch("/api/products")
+      if (!res.ok) throw new Error("Error al obtener los productos")
       const data: Product[] = await res.json()
       setProducts(data)
     } catch (error) {
       console.error(error)
-      setError('Error al cargar los productos')
+      setError("Error al cargar los productos")
     } finally {
       setIsLoading(false)
     }
@@ -114,22 +107,22 @@ export default function ProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories')
-      if (!res.ok) throw new Error('Error al obtener las categorías')
+      const res = await fetch("/api/categories")
+      if (!res.ok) throw new Error("Error al obtener las categorías")
       const data: Category[] = await res.json()
       setCategories(data)
     } catch (error) {
       console.error(error)
-      setError('Error al cargar las categorías')
+      setError("Error al cargar las categorías")
     }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, files } = e.target as HTMLInputElement & HTMLTextAreaElement
-    if (name === 'image' && files) {
-      setFormData(prev => ({ ...prev, image: files[0] }))
+    if (name === "image" && files) {
+      setFormData((prev) => ({ ...prev, image: files[0] }))
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
+      setFormData((prev) => ({ ...prev, [name]: value }))
     }
   }
 
@@ -141,40 +134,48 @@ export default function ProductsPage() {
 
     const submitData = new FormData()
     if (editingProduct) {
-      submitData.append('id', editingProduct.id)
+      submitData.append("id", editingProduct.id)
     }
-    submitData.append('name', formData.name)
-    submitData.append('price', formData.price)
-    submitData.append('category', formData.category)
-    submitData.append('description', formData.description)
-    submitData.append('emoji', formData.emoji)
-    submitData.append('detailedDescription', formData.detailedDescription)
+    submitData.append("name", formData.name)
+    submitData.append("price", formData.price)
+    submitData.append("category", formData.category)
+    submitData.append("description", formData.description)
+    submitData.append("emoji", formData.emoji)
+    submitData.append("detailedDescription", formData.detailedDescription)
     if (formData.image) {
-      submitData.append('image', formData.image)
+      submitData.append("image", formData.image)
     }
 
     try {
       if (editingProduct) {
-        const res = await fetch('/api/products', {
-          method: 'PUT',
+        const res = await fetch("/api/products", {
+          method: "PUT",
           body: submitData,
         })
 
         if (res.ok) {
           const updatedProduct = await res.json()
-          setProducts(products.map(prod => prod.id === updatedProduct.id ? updatedProduct : prod))
+          setProducts(products.map((prod) => (prod.id === updatedProduct.id ? updatedProduct : prod)))
           setIsOpen(false)
           setEditingProduct(null)
-          setFormData({ name: '', price: '', category: '', description: '', emoji: '', detailedDescription: '', image: null })
-          setSuccess('Producto actualizado exitosamente')
+          setFormData({
+            name: "",
+            price: "",
+            category: "",
+            description: "",
+            emoji: "",
+            detailedDescription: "",
+            image: null,
+          })
+          setSuccess("Producto actualizado exitosamente")
         } else {
           const errorData = await res.json()
-          console.error('Error al editar el producto:', errorData.error)
-          setError('Error al editar el producto')
+          console.error("Error al editar el producto:", errorData.error)
+          setError("Error al editar el producto")
         }
       } else {
-        const res = await fetch('/api/products', {
-          method: 'POST',
+        const res = await fetch("/api/products", {
+          method: "POST",
           body: submitData,
         })
 
@@ -182,17 +183,25 @@ export default function ProductsPage() {
           const newProduct = await res.json()
           setProducts([...products, newProduct])
           setIsOpen(false)
-          setFormData({ name: '', price: '', category: '', description: '', emoji: '', detailedDescription: '', image: null })
-          setSuccess('Producto creado exitosamente')
+          setFormData({
+            name: "",
+            price: "",
+            category: "",
+            description: "",
+            emoji: "",
+            detailedDescription: "",
+            image: null,
+          })
+          setSuccess("Producto creado exitosamente")
         } else {
           const errorData = await res.json()
-          console.error('Error al crear el producto:', errorData.error)
-          setError('Error al crear el producto')
+          console.error("Error al crear el producto:", errorData.error)
+          setError("Error al crear el producto")
         }
       }
     } catch (error) {
-      console.error('Error al enviar el formulario:', error)
-      setError('Error al enviar el formulario')
+      console.error("Error al enviar el formulario:", error)
+      setError("Error al enviar el formulario")
     } finally {
       setIsLoading(false)
     }
@@ -201,23 +210,23 @@ export default function ProductsPage() {
   const handleDelete = async (id: string) => {
     setIsLoading(true)
     try {
-      const res = await fetch('/api/products', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       })
 
       if (res.ok) {
-        setProducts(products.filter(prod => prod.id !== id))
-        setSuccess('Producto eliminado exitosamente')
+        setProducts(products.filter((prod) => prod.id !== id))
+        setSuccess("Producto eliminado exitosamente")
       } else {
         const errorData = await res.json()
-        console.error('Error al eliminar el producto:', errorData.error)
-        setError('Error al eliminar el producto')
+        console.error("Error al eliminar el producto:", errorData.error)
+        setError("Error al eliminar el producto")
       }
     } catch (error) {
-      console.error('Error al eliminar el producto:', error)
-      setError('Error al eliminar el producto')
+      console.error("Error al eliminar el producto:", error)
+      setError("Error al eliminar el producto")
     } finally {
       setIsLoading(false)
     }
@@ -225,43 +234,42 @@ export default function ProductsPage() {
 
   // Función para manejar la selección de categorías
   const handleCategoryToggle = (categoryId: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(categoryId)
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
+    setSelectedCategories((prev) =>
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId],
     )
   }
 
   // Función para limpiar filtros
   const clearFilters = () => {
     setSelectedCategories([])
-    setSearchQuery('')
-    setPriceRange({ min: '', max: '' })
-    setSortOrder('name-asc')
+    setSearchQuery("")
+    setPriceRange({ min: "", max: "" })
+    setSortOrder("name-asc")
     setIsFilterSheetOpen(false)
   }
 
   // Filtrado y ordenamiento de productos
   const filteredAndSortedProducts = useMemo(() => {
     return products
-      .filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      .filter((product) => {
+        const matchesSearch =
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.description.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesCategories = selectedCategories.length === 0 ||
-          selectedCategories.includes(product.category.id)
-        const matchesPriceRange = (!priceRange.min || Number.parseFloat(product.price) >= Number.parseFloat(priceRange.min)) &&
+        const matchesCategories = selectedCategories.length === 0 || selectedCategories.includes(product.category.id)
+        const matchesPriceRange =
+          (!priceRange.min || Number.parseFloat(product.price) >= Number.parseFloat(priceRange.min)) &&
           (!priceRange.max || Number.parseFloat(product.price) <= Number.parseFloat(priceRange.max))
         return matchesSearch && matchesCategories && matchesPriceRange
       })
       .sort((a, b) => {
         switch (sortOrder) {
-          case 'name-asc':
+          case "name-asc":
             return a.name.localeCompare(b.name)
-          case 'name-desc':
+          case "name-desc":
             return b.name.localeCompare(a.name)
-          case 'price-asc':
+          case "price-asc":
             return Number.parseFloat(a.price) - Number.parseFloat(b.price)
-          case 'price-desc':
+          case "price-desc":
             return Number.parseFloat(b.price) - Number.parseFloat(a.price)
           default:
             return 0
@@ -276,15 +284,30 @@ export default function ProductsPage() {
           <h1 className="text-3xl font-bold">📦 Gestión de Productos</h1>
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => { setIsOpen(true); setEditingProduct(null); setFormData({ name: '', price: '', category: '', description: '', emoji: '', detailedDescription: '', image: null }) }}>
+              <Button
+                onClick={() => {
+                  setIsOpen(true)
+                  setEditingProduct(null)
+                  setFormData({
+                    name: "",
+                    price: "",
+                    category: "",
+                    description: "",
+                    emoji: "",
+                    detailedDescription: "",
+                    image: null,
+                  })
+                }}
+              >
                 ✨ Nuevo Producto
               </Button>
             </DialogTrigger>
-            <DialogContent aria-describedby="product-form-description" className="max-w-2xl">
+            <DialogContent
+              aria-describedby="product-form-description"
+              className="max-w-2xl overflow-y-auto max-h-[80vh]"
+            >
               <DialogHeader>
-                <DialogTitle>
-                  {editingProduct ? '✏️ Editar Producto' : '✨ Nuevo Producto'}
-                </DialogTitle>
+                <DialogTitle>{editingProduct ? "✏️ Editar Producto" : "✨ Nuevo Producto"}</DialogTitle>
                 <DialogDescription id="product-form-description">
                   Añade o modifica los detalles del producto aquí. Asegúrate de completar todos los campos requeridos.
                 </DialogDescription>
@@ -317,14 +340,14 @@ export default function ProductsPage() {
                   <Label htmlFor="category">Categoría</Label>
                   <Select
                     value={formData.category}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                    onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
                     required
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map(cat => (
+                      {categories.map((cat) => (
                         <SelectItem key={cat.id} value={cat.id}>
                           {cat.name}
                         </SelectItem>
@@ -374,46 +397,37 @@ export default function ProductsPage() {
                     required={!editingProduct}
                   />
                 </div>
-                <div className="flex gap-2">
-                  <Select
-                    value={currency}
-                    onValueChange={setCurrency}
-                  >
-                    <SelectTrigger className="w-[100px]">
-                      <SelectValue placeholder="Moneda" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currencies.map((c) => (
-                        <SelectItem key={c.value} value={c.value}>
-                          {c.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button type="submit" disabled={isLoading}>
+                <div>
+                  <Button type="submit" disabled={isLoading} className="w-full">
                     {isLoading ? (
                       <span className="flex items-center gap-2">
                         <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
                         </svg>
-                        {editingProduct ? 'Guardando...' : 'Creando...'}
+                        {editingProduct ? "Guardando..." : "Creando..."}
                       </span>
+                    ) : editingProduct ? (
+                      "💾 Guardar Cambios"
                     ) : (
-                      editingProduct ? '💾 Guardar Cambios' : '✨ Crear Producto'
+                      "✨ Crear Producto"
                     )}
                   </Button>
                 </div>
-                {error && (
-                  <div className="bg-red-100 text-red-700 p-4 rounded">
-                    {error}
-                  </div>
-                )}
-                {success && (
-                  <div className="bg-green-100 text-green-700 p-4 rounded">
-                    {success}
-                  </div>
-                )}
+                {error && <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>}
+                {success && <div className="bg-green-100 text-green-700 p-4 rounded">{success}</div>}
               </form>
             </DialogContent>
           </Dialog>
@@ -442,18 +456,10 @@ export default function ProductsPage() {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>Ordenar por</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setSortOrder('name-asc')}>
-                  Nombre (A-Z)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortOrder('name-desc')}>
-                  Nombre (Z-A)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortOrder('price-asc')}>
-                  Precio (Menor a Mayor)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortOrder('price-desc')}>
-                  Precio (Mayor a Menor)
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("name-asc")}>Nombre (A-Z)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("name-desc")}>Nombre (Z-A)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("price-asc")}>Precio (Menor a Mayor)</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortOrder("price-desc")}>Precio (Mayor a Menor)</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -473,38 +479,36 @@ export default function ProductsPage() {
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle>Filtros</SheetTitle>
-                  <SheetDescription>
-                    Filtra los productos por categoría y rango de precios.
-                  </SheetDescription>
+                  <SheetDescription>Filtra los productos por categoría y rango de precios.</SheetDescription>
                 </SheetHeader>
                 <div className="py-6 space-y-6">
                   <div className="space-y-4">
                     <h4 className="font-medium">Ordenar por</h4>
                     <div className="grid grid-cols-1 gap-2">
                       <Button
-                        variant={sortOrder === 'name-asc' ? 'default' : 'outline'}
-                        onClick={() => setSortOrder('name-asc')}
+                        variant={sortOrder === "name-asc" ? "default" : "outline"}
+                        onClick={() => setSortOrder("name-asc")}
                         className="justify-start"
                       >
                         Nombre (A-Z)
                       </Button>
                       <Button
-                        variant={sortOrder === 'name-desc' ? 'default' : 'outline'}
-                        onClick={() => setSortOrder('name-desc')}
+                        variant={sortOrder === "name-desc" ? "default" : "outline"}
+                        onClick={() => setSortOrder("name-desc")}
                         className="justify-start"
                       >
                         Nombre (Z-A)
                       </Button>
                       <Button
-                        variant={sortOrder === 'price-asc' ? 'default' : 'outline'}
-                        onClick={() => setSortOrder('price-asc')}
+                        variant={sortOrder === "price-asc" ? "default" : "outline"}
+                        onClick={() => setSortOrder("price-asc")}
                         className="justify-start"
                       >
                         Precio (Menor a Mayor)
                       </Button>
                       <Button
-                        variant={sortOrder === 'price-desc' ? 'default' : 'outline'}
-                        onClick={() => setSortOrder('price-desc')}
+                        variant={sortOrder === "price-desc" ? "default" : "outline"}
+                        onClick={() => setSortOrder("price-desc")}
                         className="justify-start"
                       >
                         Precio (Mayor a Menor)
@@ -522,7 +526,7 @@ export default function ProductsPage() {
                           min="0"
                           step="0.01"
                           value={priceRange.min}
-                          onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                          onChange={(e) => setPriceRange((prev) => ({ ...prev, min: e.target.value }))}
                           placeholder="Min"
                         />
                       </div>
@@ -534,7 +538,7 @@ export default function ProductsPage() {
                           min="0"
                           step="0.01"
                           value={priceRange.max}
-                          onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                          onChange={(e) => setPriceRange((prev) => ({ ...prev, max: e.target.value }))}
                           placeholder="Max"
                         />
                       </div>
@@ -575,7 +579,7 @@ export default function ProductsPage() {
         {(selectedCategories.length > 0 || searchQuery || priceRange.min || priceRange.max) && (
           <div className="flex flex-wrap gap-2">
             {selectedCategories.map((categoryId) => {
-              const category = categories.find(c => c.id === categoryId)
+              const category = categories.find((c) => c.id === categoryId)
               if (!category) return null
               return (
                 <Badge
@@ -598,41 +602,22 @@ export default function ProductsPage() {
               )
             })}
             {(priceRange.min || priceRange.max) && (
-              <Badge
-                variant="secondary"
-                className="cursor-pointer"
-                onClick={() => setPriceRange({ min: '', max: '' })}
-              >
-                Precio: {priceRange.min ? `$${priceRange.min}` : '$0'} - {priceRange.max ? `$${priceRange.max}` : '∞'}
-                <button
-                  className="ml-1 hover:text-destructive"
-                  onClick={() => setPriceRange({ min: '', max: '' })}
-                >
+              <Badge variant="secondary" className="cursor-pointer" onClick={() => setPriceRange({ min: "", max: "" })}>
+                Precio: {priceRange.min ? `$${priceRange.min}` : "$0"} - {priceRange.max ? `$${priceRange.max}` : "∞"}
+                <button className="ml-1 hover:text-destructive" onClick={() => setPriceRange({ min: "", max: "" })}>
                   ×
                 </button>
               </Badge>
             )}
             {searchQuery && (
-              <Badge
-                variant="secondary"
-                className="cursor-pointer"
-                onClick={() => setSearchQuery('')}
-              >
+              <Badge variant="secondary" className="cursor-pointer" onClick={() => setSearchQuery("")}>
                 Búsqueda: {searchQuery}
-                <button
-                  className="ml-1 hover:text-destructive"
-                  onClick={() => setSearchQuery('')}
-                >
+                <button className="ml-1 hover:text-destructive" onClick={() => setSearchQuery("")}>
                   ×
                 </button>
               </Badge>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearFilters}
-              className="h-6 px-2 text-xs"
-            >
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2 text-xs">
               Limpiar todos
             </Button>
           </div>
@@ -699,16 +684,12 @@ export default function ProductsPage() {
                               <span className="text-2xl">{product.emoji}</span>
                               <h3 className="font-semibold text-lg">{product.name}</h3>
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                              {product.description}
-                            </p>
+                            <p className="text-sm text-muted-foreground">{product.description}</p>
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-sm bg-primary/10 text-primary px-2 py-1 rounded">
-                                {product.category ? product.category.name : 'Categoría desconocida'}
+                                {product.category ? product.category.name : "Categoría desconocida"}
                               </span>
-                              <span className="font-bold">
-                                💰 ${product.price}
-                              </span>
+                              <span className="font-bold">💰 ${product.price}</span>
                             </div>
                           </div>
                         </div>
@@ -726,7 +707,7 @@ export default function ProductsPage() {
                             category: product.category.id,
                             description: product.description,
                             emoji: product.emoji,
-                            detailedDescription: product.detailedDescription || '',
+                            detailedDescription: product.detailedDescription || "",
                             image: null,
                           })
                           setIsOpen(true)
@@ -743,8 +724,20 @@ export default function ProductsPage() {
                         {isLoading ? (
                           <span className="flex items-center gap-2">
                             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                fill="none"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              />
                             </svg>
                             Eliminando...
                           </span>
@@ -757,11 +750,7 @@ export default function ProductsPage() {
                 </motion.div>
               ))
             ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="col-span-full text-center py-12"
-              >
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full text-center py-12">
                 <p className="text-muted-foreground">
                   No se encontraron productos que coincidan con los filtros aplicados.
                 </p>
