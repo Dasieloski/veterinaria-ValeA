@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { useRouter } from "next/navigation"
 import { SearchProducts } from "@/components/search-products"
 import { OffersSlider } from "@/components/offers-slider"
-import Loading from "./loading"
+import Loading from "@/app/loading"
 import { AnimatedTitle } from "@/components/animated-title"
 import {
   CategorySkeleton,
@@ -212,12 +212,11 @@ export default function Store() {
 
   // Filtrar productos
   const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === "todos" || product.category.id === selectedCategory;
+    const matchesCategory = selectedCategory === "todos" || product.category.id === selectedCategory
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesCategory && matchesSearch
   })
 
   React.useEffect(() => {
@@ -225,7 +224,7 @@ export default function Store() {
   }, [darkMode]) // Added darkMode to dependencies
 
   React.useEffect(() => {
-    const words = [ "increíble", "fantástica", "mágica", "especial", "asombrosa"]
+    const words = ["increíble", "fantástica", "mágica", "especial", "asombrosa"]
     const interval = setInterval(() => {
       setHighlightedWord((current) => {
         const currentIndex = words.indexOf(current)
@@ -604,18 +603,42 @@ export default function Store() {
                               <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
                               <p className="text-muted-foreground text-sm">{product.description}</p>
                               {product.detailedDescription && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button variant="ghost" size="sm" className="mt-2 text-primary">
-                                        Ver detalles técnicos
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      <p>{product.detailedDescription}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                <>
+                                  {/* Desktop: Show tooltip */}
+                                  <div className="hidden md:block">
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Button variant="ghost" size="sm" className="mt-2 text-primary">
+                                            Ver detalles técnicos
+                                          </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs">
+                                          <p>{product.detailedDescription}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+
+                                  {/* Mobile: Show sheet */}
+                                  <div className="block md:hidden">
+                                    <Sheet>
+                                      <SheetTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="mt-2 text-primary">
+                                          Ver detalles técnicos
+                                        </Button>
+                                      </SheetTrigger>
+                                      <SheetContent>
+                                        <SheetHeader>
+                                          <SheetTitle>Detalles Técnicos</SheetTitle>
+                                        </SheetHeader>
+                                        <div className="mt-4">
+                                          <p>{product.detailedDescription}</p>
+                                        </div>
+                                      </SheetContent>
+                                    </Sheet>
+                                  </div>
+                                </>
                               )}
                             </div>
                           </CardContent>
@@ -681,7 +704,7 @@ export default function Store() {
                 <h3 className="text-xl font-bold">Contacto</h3>
                 <div className="space-y-2 text-muted-foreground">
                   <p>Teléfono: +53 5 3002531</p>
-                 {/*  <p>Email: info@vetagro.cu</p> */}
+                  {/*  <p>Email: info@vetagro.cu</p> */}
                   <p>Horario: Lunes a Sábado 8:00 AM - 5:00 PM</p>
                 </div>
               </div>
