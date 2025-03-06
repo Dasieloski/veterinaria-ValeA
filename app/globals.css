@@ -107,317 +107,311 @@
   }
 }
 
-/* Transiciones mejoradas para interacciones */
-.btn,
-button,
-a,
-input,
-select {
-  @apply transition-all duration-300 ease-in-out;
-}
+@layer components {
 
-/* Estilos profesionales para tarjetas con sombras mejoradas */
-.card {
-  @apply bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300;
-}
-
-/* Estilos para tablas profesionales con bordes más sutiles */
-table {
-  @apply w-full border-collapse;
-}
-
-th {
-  @apply bg-muted px-4 py-3 text-left font-medium text-muted-foreground;
-}
-
-td {
-  @apply px-4 py-3 border-t border-border;
-}
-
-/* Estilos para formularios profesionales con efectos de foco mejorados */
-input,
-select,
-textarea {
-  @apply bg-background border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background;
-}
-
-/* Badges y estados con colores mejorados */
-.badge {
-  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
-}
-
-.badge-warning {
-  @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-100;
-}
-
-.badge-error {
-  @apply bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-100;
-}
-
-.badge-success {
-  @apply bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-100;
-}
-
-/* Contenedores con bordes sutiles y sombras mejoradas */
-.container-bordered {
-  @apply border border-border rounded-lg p-6 bg-card shadow-sm hover:shadow-md transition-all duration-300;
-}
-
-/* Tipografía profesional con espaciado mejorado */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-semibold tracking-tight text-foreground;
-}
-
-h1 {
-  @apply text-4xl md:text-5xl mb-8 leading-tight;
-}
-
-h2 {
-  @apply text-3xl md:text-4xl mb-6 leading-tight;
-}
-
-h3 {
-  @apply text-2xl md:text-3xl mb-4 leading-tight;
-}
-
-/* Navegación y menús con efectos mejorados */
-nav {
-  @apply border-b border-border bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 shadow-sm;
-}
-
-.nav-link {
-  @apply px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors;
-}
-
-/* Tooltips y elementos informativos con sombras mejoradas */
-.tooltip {
-  @apply absolute z-50 px-3 py-1.5 text-xs font-medium text-white bg-foreground rounded-md shadow-lg;
-}
-
-/* Animaciones refinadas */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+  /* Transiciones mejoradas para interacciones */
+  .btn,
+  button,
+  a,
+  input,
+  select {
+    @apply transition-all duration-300 ease-in-out;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  /* Estilos profesionales para tarjetas con sombras mejoradas */
+  .card {
+    @apply bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* Estilos para tablas profesionales con bordes más sutiles */
+  table {
+    @apply w-full border-collapse;
+  }
+
+  th {
+    @apply bg-muted px-4 py-3 text-left font-medium text-muted-foreground;
+  }
+
+  td {
+    @apply px-4 py-3 border-t border-border;
+  }
+
+  /* Estilos para formularios profesionales con efectos de foco mejorados */
+  input,
+  select,
+  textarea {
+    @apply bg-background border border-input rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background;
+  }
+
+  /* Badges y estados con colores mejorados */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-100;
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-100;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-100;
+  }
+
+  /* Contenedores con bordes sutiles y sombras mejoradas */
+  .container-bordered {
+    @apply border border-border rounded-lg p-6 bg-card shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* Tipografía profesional con espaciado mejorado */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl mb-8 leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl mb-6 leading-tight;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl mb-4 leading-tight;
+  }
+
+  /* Navegación y menús con efectos mejorados */
+  nav {
+    @apply border-b border-border bg-background/95 backdrop-blur-lg shadow-sm;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors;
+  }
+
+  /* Tooltips y elementos informativos con sombras mejoradas */
+  .tooltip {
+    @apply absolute z-50 px-3 py-1.5 text-xs font-medium text-white bg-foreground rounded-md shadow-lg;
+  }
+
+  /* Estilos para estados de carga con colores mejorados */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded;
+  }
+
+  /* Estilos para mensajes de estado con colores mejorados */
+  .alert {
+    @apply p-4 mb-4 rounded-md border;
+  }
+
+  .alert-info {
+    @apply bg-primary/10 border-primary/20 text-primary-foreground dark:bg-primary/20 dark:border-primary/30 dark:text-primary-foreground;
+  }
+
+  .alert-warning {
+    @apply bg-yellow-100/10 border-yellow-200/20 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800/30 dark:text-yellow-100;
+  }
+
+  .alert-error {
+    @apply bg-destructive/10 border-destructive/20 text-destructive dark:bg-destructive/20 dark:border-destructive/30 dark:text-destructive-foreground;
+  }
+
+  .alert-success {
+    @apply bg-green-100/10 border-green-200/20 text-green-800 dark:bg-green-900/20 dark:border-green-800/30 dark:text-green-100;
+  }
+
+  /* Estilos para botones de acción con efectos mejorados */
+  .btn-action {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  /* Estilos para secciones de contenido con espaciado mejorado */
+  .content-section {
+    @apply py-16 border-t border-border first:border-0;
+  }
+
+  .content-container {
+    @apply container mx-auto px-4 max-w-7xl;
+  }
+
+  /* Utilidades de espaciado consistentes */
+  .section-spacing {
+    @apply space-y-10;
+  }
+
+  .item-spacing {
+    @apply space-y-5;
+  }
+
+  /* Efectos de hover mejorados para tarjetas de productos */
+  .product-card {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  /* Estilos para imágenes con bordes sutiles */
+  .img-bordered {
+    @apply border border-border rounded-md overflow-hidden;
+  }
+
+  /* Estilos para botones flotantes */
+  .floating-button {
+    @apply fixed bottom-6 right-6 rounded-full p-4 bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all duration-300;
+  }
+
+  /* Estilos para barras de progreso */
+  .progress-bar {
+    @apply w-full h-2 bg-muted rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-primary rounded-full transition-all duration-300;
+  }
+
+  /* Estilos para pestañas */
+  .tabs {
+    @apply flex border-b border-border;
+  }
+
+  .tab {
+    @apply px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-primary transition-colors;
+  }
+
+  .tab-active {
+    @apply text-foreground border-primary;
+  }
+
+  /* Estilos para chips/tags */
+  .chip {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-muted text-muted-foreground;
+  }
+
+  /* Estilos para divisores con gradiente */
+  .divider-gradient {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent my-8;
+  }
+
+  /* Efectos de glass para elementos superpuestos */
+  .glass-effect {
+    @apply bg-background/80 backdrop-blur-md border border-border/50 shadow-sm;
+  }
+
+  /* Estilos para botones de redes sociales */
+  .social-button {
+    @apply p-2 rounded-full bg-muted hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground transition-colors;
+  }
+
+  /* Estilos para precios */
+  .price {
+    @apply text-2xl font-bold text-foreground;
+  }
+
+  .price-discount {
+    @apply text-sm line-through text-muted-foreground mr-2;
+  }
+
+  /* Estilos para etiquetas de descuento */
+  .discount-badge {
+    @apply absolute top-2 right-2 bg-accent text-accent-foreground px-2 py-1 rounded text-xs font-bold shadow-sm;
+  }
+
+  /* Estilos para ratings */
+  .rating {
+    @apply flex items-center;
+  }
+
+  .rating-star {
+    @apply text-yellow-500;
+  }
+
+  .rating-star-empty {
+    @apply text-muted;
+  }
+
+  /* Estilos para botones de cantidad */
+  .quantity-button {
+    @apply p-1 rounded-md bg-muted hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground transition-colors;
+  }
+
+  /* Estilos para notificaciones */
+  .notification-dot {
+    @apply absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full border-2 border-background;
+  }
+
+  /* Estilos para carrusel de imágenes */
+  .carousel-dots {
+    @apply flex justify-center gap-2 mt-4;
+  }
+
+  .carousel-dot {
+    @apply w-2 h-2 rounded-full bg-muted hover:bg-muted-foreground/50 transition-colors;
+  }
+
+  .carousel-dot-active {
+    @apply bg-primary;
+  }
+
+  /* Estilos para botones de navegación de carrusel */
+  .carousel-nav-button {
+    @apply absolute top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 text-foreground shadow-md hover:bg-background transition-colors;
+  }
+
+  .carousel-nav-prev {
+    @apply left-2;
+  }
+
+  .carousel-nav-next {
+    @apply right-2;
   }
 }
 
-.fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
+@layer utilities {
 
-/* Estilos para estados de carga con colores mejorados */
-.skeleton {
-  @apply animate-pulse bg-muted rounded;
-}
+  /* Animaciones refinadas */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
 
-/* Estilos para mensajes de estado con colores mejorados */
-.alert {
-  @apply p-4 mb-4 rounded-md border;
-}
-
-.alert-info {
-  @apply bg-primary/10 border-primary/20 text-primary-foreground dark:bg-primary/20 dark:border-primary/30 dark:text-primary-foreground;
-}
-
-.alert-warning {
-  @apply bg-warning/10 border-warning/20 text-warning dark:bg-warning/20 dark:border-warning/30 dark:text-warning-foreground;
-}
-
-.alert-error {
-  @apply bg-destructive/10 border-destructive/20 text-destructive dark:bg-destructive/20 dark:border-destructive/30 dark:text-destructive-foreground;
-}
-
-.alert-success {
-  @apply bg-success/10 border-success/20 text-success dark:bg-success/20 dark:border-success/30 dark:text-success-foreground;
-}
-
-/* Estilos para botones de acción con efectos mejorados */
-.btn-action {
-  @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
-}
-
-.btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all duration-300;
-}
-
-.btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-sm hover:shadow-md transition-all duration-300;
-}
-
-/* Estilos para secciones de contenido con espaciado mejorado */
-.content-section {
-  @apply py-16 border-t border-border first:border-0;
-}
-
-.content-container {
-  @apply container mx-auto px-4 max-w-7xl;
-}
-
-/* Utilidades de espaciado consistentes */
-.section-spacing {
-  @apply space-y-10;
-}
-
-.item-spacing {
-  @apply space-y-5;
-}
-
-/* Efectos de hover mejorados para tarjetas de productos */
-.product-card {
-  @apply transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg;
-}
-
-/* Estilos para imágenes con bordes sutiles */
-.img-bordered {
-  @apply border border-border rounded-md overflow-hidden;
-}
-
-/* Estilos para botones flotantes */
-.floating-button {
-  @apply fixed bottom-6 right-6 rounded-full p-4 bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all duration-300;
-}
-
-/* Estilos para barras de progreso */
-.progress-bar {
-  @apply w-full h-2 bg-muted rounded-full overflow-hidden;
-}
-
-.progress-bar-fill {
-  @apply h-full bg-primary rounded-full transition-all duration-300;
-}
-
-/* Estilos para pestañas */
-.tabs {
-  @apply flex border-b border-border;
-}
-
-.tab {
-  @apply px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border-b-2 border-transparent hover:border-primary transition-colors;
-}
-
-.tab-active {
-  @apply text-foreground border-primary;
-}
-
-/* Estilos para chips/tags */
-.chip {
-  @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-muted text-muted-foreground;
-}
-
-/* Estilos para divisores con gradiente */
-.divider-gradient {
-  @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent my-8;
-}
-
-/* Estilos para scrollbar personalizado */
-::-webkit-scrollbar {
-  @apply w-2 h-2;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-muted/50 rounded-full;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
-}
-
-/* Efectos de glass para elementos superpuestos */
-.glass-effect {
-  @apply bg-background/80 backdrop-blur-md border border-border/50 shadow-sm;
-}
-
-/* Animación de pulso para elementos destacados */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  50% {
-    opacity: 0.7;
+
+  .fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Animación de pulso para elementos destacados */
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .pulse-animation {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
-
-.pulse-animation {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Estilos para botones de redes sociales */
-.social-button {
-  @apply p-2 rounded-full bg-muted hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground transition-colors;
-}
-
-/* Estilos para precios */
-.price {
-  @apply text-2xl font-bold text-foreground;
-}
-
-.price-discount {
-  @apply text-sm line-through text-muted-foreground mr-2;
-}
-
-/* Estilos para etiquetas de descuento */
-.discount-badge {
-  @apply absolute top-2 right-2 bg-accent text-accent-foreground px-2 py-1 rounded text-xs font-bold shadow-sm;
-}
-
-/* Estilos para ratings */
-.rating {
-  @apply flex items-center;
-}
-
-.rating-star {
-  @apply text-warning;
-}
-
-.rating-star-empty {
-  @apply text-muted;
-}
-
-/* Estilos para botones de cantidad */
-.quantity-button {
-  @apply p-1 rounded-md bg-muted hover:bg-muted-foreground/10 text-muted-foreground hover:text-foreground transition-colors;
-}
-
-/* Estilos para notificaciones */
-.notification-dot {
-  @apply absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full border-2 border-background;
-}
-
-/* Estilos para carrusel de imágenes */
-.carousel-dots {
-  @apply flex justify-center gap-2 mt-4;
-}
-
-.carousel-dot {
-  @apply w-2 h-2 rounded-full bg-muted hover:bg-muted-foreground/50 transition-colors;
-}
-
-.carousel-dot-active {
-  @apply bg-primary;
-}
-
-/* Estilos para botones de navegación de carrusel */
-.carousel-nav-button {
-  @apply absolute top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 text-foreground shadow-md hover:bg-background transition-colors;
-}
-
-.carousel-nav-prev {
-  @apply left-2;
-}
-
-.carousel-nav-next {
-  @apply right-2;
-}
-
